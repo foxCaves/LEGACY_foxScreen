@@ -101,19 +101,19 @@ namespace FoxScreen
 
             Image watermark = Image.FromFile("watermark.png");
 
-            Bitmap b = new Bitmap(size.Width  + 10, size.Height + 10,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Bitmap b = new Bitmap(size.Width  + 20, size.Height + 20,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
 
             g.Clear(Color.White);
+            g.CopyFromScreen(x, y, 10, 10, size);
 
-            g.CopyFromScreen(x, y, 5, 5, size);
             g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);
 
             int imgWidth = 32;
             int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
 
 
-            g.DrawImage(watermark, b.Width - imgWidth, b.Height - imgHeight, imgWidth, imgHeight);
+            g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);
 
             g.Flush();
             g.Dispose();
