@@ -97,24 +97,36 @@ namespace FoxScreen
             StringFormat format = new StringFormat();
             format.Alignment = StringAlignment.Center;
             format.LineAlignment = StringAlignment.Center;
-            Brush brush = new SolidBrush(Color.FromArgb(128, 255, 0, 255));
+            Brush brush = new SolidBrush(Color.FromArgb(64, 255, 0, 255));
 
-            Bitmap b = new Bitmap(size.Width, size.Height);
+            Image watermark = Image.FromFile("watermark.png");
+
+            Bitmap b = new Bitmap(size.Width  + 10, size.Height + 10,System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
-            g.CopyFromScreen(x, y, 0, 0, size);
+
+            g.Clear(Color.White);
+
+            g.CopyFromScreen(x, y, 5, 5, size);
             g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);
+
+            int imgWidth = 32;
+            int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
+
+
+            g.DrawImage(watermark, b.Width - imgWidth, b.Height - imgHeight, imgWidth, imgHeight);
+
             g.Flush();
             g.Dispose();
             try
             {
-                customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + ".jpg";
+                customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + ".png";
                 FtpWebRequest ftpr = (FtpWebRequest)FtpWebRequest.Create(tbHost.Text + "/" + customname);
                 ftpr.Method = WebRequestMethods.Ftp.UploadFile;
                 ftpr.UsePassive = true;
                 ftpr.UseBinary = true;
                 ftpr.Credentials = new NetworkCredential(tbUser.Text, tbPword.Text);
                 Stream str = ftpr.GetRequestStream();
-                b.Save(str, System.Drawing.Imaging.ImageFormat.Jpeg);
+                b.Save(str, System.Drawing.Imaging.ImageFormat.Png);
                 str.Close();
                 FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
                 resp.Close();
