@@ -92,7 +92,7 @@
             // 
             // btnFullshot
             // 
-            this.btnFullshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.btnFullshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFullshot.Location = new System.Drawing.Point(12, 155);
             this.btnFullshot.Name = "btnFullshot";
@@ -104,6 +104,8 @@
             // 
             // tbPword
             // 
+            this.tbPword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tbPword.Location = new System.Drawing.Point(84, 64);
             this.tbPword.Name = "tbPword";
             this.tbPword.PasswordChar = '*';
@@ -122,6 +124,8 @@
             // 
             // tbLB
             // 
+            this.tbLB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tbLB.Location = new System.Drawing.Point(84, 90);
             this.tbLB.Name = "tbLB";
             this.tbLB.Size = new System.Drawing.Size(294, 20);
@@ -137,7 +141,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Location = new System.Drawing.Point(12, 116);
             this.btnSave.Name = "btnSave";
