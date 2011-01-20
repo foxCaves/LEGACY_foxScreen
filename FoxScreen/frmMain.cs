@@ -126,8 +126,22 @@ namespace FoxScreen
                 ftpr.UseBinary = true;
                 ftpr.Credentials = new NetworkCredential(tbUser.Text, tbPword.Text);
                 Stream str = ftpr.GetRequestStream();
-                b.Save(str, System.Drawing.Imaging.ImageFormat.Png);
+                MemoryStream mstr = new MemoryStream();
+                b.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
+                mstr.Seek(0,SeekOrigin.Begin);
+
+                byte[] buffer = new byte[256];
+                int readb;
+                while (mstr.CanRead)
+                {
+                    readb = (int)(mstr.Length - mstr.Position);
+                    if(readb > 256) readb = 256;
+                    readb = mstr.Read(buffer, 0, readb);
+                    if (readb <= 0) break;
+                    str.Write(buffer,0,readb);
+                }
                 str.Close();
+                mstr.Close();
                 FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
                 resp.Close();
 
