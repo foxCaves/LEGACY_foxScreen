@@ -86,18 +86,12 @@ namespace FoxScreen
             for (int i = 0; i < imax; i++)
             {
                 c = cna[i];
-                if((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9'))
+                if((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') && c != '.' && c != '-' && c != '_')
                 {
                     cna[i] = '_';
                 }
             }
             customname = new String(cna);
-
-            Font font = new Font("Arial",(Math.Min(size.Width,size.Height) / 6),FontStyle.Regular,GraphicsUnit.Pixel);
-            StringFormat format = new StringFormat();
-            format.Alignment = StringAlignment.Center;
-            format.LineAlignment = StringAlignment.Center;
-            Brush brush = new SolidBrush(Color.FromArgb(64, 255, 0, 255));
 
             Image watermark = Image.FromFile("watermark.png");
 
@@ -107,7 +101,12 @@ namespace FoxScreen
             g.Clear(Color.White);
             g.CopyFromScreen(x, y, 10, 10, size);
 
-            g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);
+            /*Font font = new Font("Arial",(Math.Min(size.Width,size.Height) / 6),FontStyle.Regular,GraphicsUnit.Pixel);
+            StringFormat format = new StringFormat();
+            format.Alignment = StringAlignment.Center;
+            format.LineAlignment = StringAlignment.Center;
+            Brush brush = new SolidBrush(Color.FromArgb(64, 255, 0, 255));
+            g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);*/
 
             int imgWidth = 32;
             int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
