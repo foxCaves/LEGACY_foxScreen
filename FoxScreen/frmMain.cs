@@ -201,5 +201,10 @@ namespace FoxScreen
             if (this.Visible) this.Hide();
             else this.Show();
         }
+
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            if (File.Exists("config.cfg")) this.Hide();
+        }
     }
 }
