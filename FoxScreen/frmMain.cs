@@ -59,12 +59,17 @@ namespace FoxScreen
 
         public void CompleteScreenShot()
         {
-            Size allScreensSize = new Size(0, 0);
+            int x = 0; int y = 0;
+            int c;
             foreach (Screen scr in Screen.AllScreens)
             {
-                allScreensSize += scr.Bounds.Size;
+                c = scr.Bounds.Left + scr.Bounds.Width;
+                if (c > x) x = c;
+
+                c = scr.Bounds.Top + scr.Bounds.Height;
+                if (c > y) y = c;
             }
-            AreaScreenShot(0, 0, allScreensSize);
+            AreaScreenShot(0, 0, x, y);
         }
 
         public void CurWndScreenShot()
