@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
+using System.IO;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Net;
-using System.IO;
 
 namespace FoxScreen
 {
     public partial class frmMain : Form
     {
+        public frmPickArea pickArea;
         KeyboardHook hook = new KeyboardHook();
 
         public frmMain()
@@ -23,6 +20,7 @@ namespace FoxScreen
             hook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
             hook.RegisterHotKey(0, Keys.PrintScreen);
             hook.RegisterHotKey(ModifierKeysH.Alt, Keys.PrintScreen);
+            hook.RegisterHotKey(ModifierKeysH.Control, Keys.PrintScreen);
 
             try
             {
@@ -37,7 +35,11 @@ namespace FoxScreen
 
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
         {
-            if (e.Modifier == ModifierKeysH.Alt)
+            if (e.Modifier == ModifierKeysH.Control)
+            {
+                SelectAreaScreenShot();
+            }
+            else if (e.Modifier == ModifierKeysH.Alt)
             {
                 CurWndScreenShot();
             }
@@ -45,6 +47,14 @@ namespace FoxScreen
             {
                 CompleteScreenShot();
             }
+        }
+
+        public void SelectAreaScreenShot()
+        {
+            if (pickArea != null) return;
+            pickArea = new frmPickArea();
+            pickArea.main = this;
+            pickArea.Show();
         }
 
         public void CompleteScreenShot()
@@ -199,7 +209,7 @@ namespace FoxScreen
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (this.Visible) this.Hide();
-            else this.Show();
+            else { this.Show(); this.Activate(); }
         }
 
         private void frmMain_Shown(object sender, EventArgs e)
