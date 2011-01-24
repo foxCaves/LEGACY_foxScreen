@@ -23,6 +23,8 @@ namespace FoxScreen
 
             GetCursorPos(ref startPos);
             this.Location = new Point(startPos.X,startPos.Y);
+            this.Size = new Size(0, 0);
+            this.Refresh();
         }
 
         ~frmPickArea()
@@ -44,8 +46,8 @@ namespace FoxScreen
 
         void HookManager_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left) return;
-            this.DoShot();
+            if (e.Button != MouseButtons.Left) this.Cancel();
+            else this.DoShot();
         }
 
         private void HookManager_KeyDown(object sender, KeyEventArgs e)
