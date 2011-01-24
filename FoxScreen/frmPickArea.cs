@@ -17,14 +17,14 @@ namespace FoxScreen
         public frmPickArea()
         {
             InitializeComponent();
+
             HookManager.MouseMove += new MouseEventHandler(HookManager_MouseMove);
             HookManager.KeyDown += new KeyEventHandler(HookManager_KeyDown);
             HookManager.MouseClick += new MouseEventHandler(HookManager_MouseClick);
 
             GetCursorPos(ref startPos);
-            this.Location = new Point(startPos.X,startPos.Y);
-            this.Size = new Size(0, 0);
-            this.Refresh();
+
+            AdaptTo(startPos);
         }
 
         ~frmPickArea()
@@ -83,32 +83,37 @@ namespace FoxScreen
         {
             this.Visible = false;
             this.Refresh();
-            main.AreaScreenShot(this.Left, this.Top, this.Size);
+            main.AreaScreenShot(this.Left - 1, this.Top - 1, this.Width - 2, this.Height - 2);
             this.Close();
         }
 
         private void HookManager_MouseMove(object sender, MouseEventArgs e)
         {
+            AdaptTo(new Point(e.X, e.Y));
+        }
+
+        private void AdaptTo(Point e)
+        {
             if (e.X < startPos.X)
             {
-                this.Left = e.X;
-                this.Width = (startPos.X - e.X) + 1;
+                this.Left = e.X - 1;
+                this.Width = (startPos.X - e.X) + 2;
             }
             else
             {
-                this.Left = startPos.X;
-                this.Width = (e.X - startPos.X) + 1;
+                this.Left = startPos.X - 1;
+                this.Width = (e.X - startPos.X) + 2;
             }
 
             if (e.Y < startPos.Y)
             {
-                this.Top = e.Y;
-                this.Height = (startPos.Y - e.Y) + 1;
+                this.Top = e.Y - 1;
+                this.Height = (startPos.Y - e.Y) + 2;
             }
             else
             {
-                this.Top = startPos.Y;
-                this.Height = (e.Y - startPos.Y) + 1;
+                this.Top = startPos.Y - 1;
+                this.Height = (e.Y - startPos.Y) + 2;
             }
 
             this.Refresh();
