@@ -123,8 +123,10 @@ namespace FoxScreen
             Brush brush = new SolidBrush(Color.FromArgb(64, 255, 0, 255));
             g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);*/
 
-            int imgWidth = 32;
-            int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
+            int imgHeight = 64;
+            int imgWidth = (int)(((float)watermark.Width / (float)watermark.Height) * (float)imgHeight);
+            //int imgWidth = 32;
+            //int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
 
 
             g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);
