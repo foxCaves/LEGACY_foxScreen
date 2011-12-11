@@ -37,7 +37,7 @@
             // 
             // pbUpload
             // 
-            this.pbUpload.Location = new System.Drawing.Point(12, 25);
+            this.pbUpload.Location = new System.Drawing.Point(13, 35);
             this.pbUpload.Name = "pbUpload";
             this.pbUpload.Size = new System.Drawing.Size(225, 18);
             this.pbUpload.TabIndex = 0;
@@ -45,7 +45,7 @@
             // lbUpload
             // 
             this.lbUpload.AutoSize = true;
-            this.lbUpload.Location = new System.Drawing.Point(237, 28);
+            this.lbUpload.Location = new System.Drawing.Point(238, 38);
             this.lbUpload.Name = "lbUpload";
             this.lbUpload.Size = new System.Drawing.Size(33, 13);
             this.lbUpload.TabIndex = 1;
@@ -54,7 +54,7 @@
             // lbStatus
             // 
             this.lbStatus.AutoSize = true;
-            this.lbStatus.Location = new System.Drawing.Point(12, 9);
+            this.lbStatus.Location = new System.Drawing.Point(13, 11);
             this.lbStatus.Name = "lbStatus";
             this.lbStatus.Size = new System.Drawing.Size(166, 13);
             this.lbStatus.TabIndex = 2;
@@ -69,7 +69,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 52);
+            this.ClientSize = new System.Drawing.Size(274, 62);
             this.Controls.Add(this.lbStatus);
             this.Controls.Add(this.lbUpload);
             this.Controls.Add(this.pbUpload);

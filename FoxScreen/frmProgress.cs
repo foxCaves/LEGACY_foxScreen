@@ -68,6 +68,13 @@ namespace FoxScreen
             }));
         }
 
+        public void SetBackColor(Color backColor)
+        {
+            this.Invoke(new MethodInvoker(delegate() {
+                this.BackColor = backColor;
+            }));
+        }
+
         private void tmHide_Tick(object sender, EventArgs e)
         {
             tmHide.Interval = 10;

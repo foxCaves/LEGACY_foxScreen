@@ -177,6 +177,7 @@ namespace FoxScreen
 
                 screenShotProgress.SetStatus("Uploading: " + customname);
                 screenShotProgress.SetProgress(0);
+                screenShotProgress.SetBackColor(Color.Yellow);
                 screenShotProgress.DoShow();
                 
                 FtpWebRequest ftpr = (FtpWebRequest)FtpWebRequest.Create(tbHost.Text + "/" + customname);
@@ -209,6 +210,7 @@ namespace FoxScreen
                 screenShotProgress.SetStatus("Saved as: " + customname);
                 screenShotProgress.SetProgress(1);
                 screenShotProgress.DoHide();
+                screenShotProgress.SetBackColor(Color.Green);
 
                 customname = tbLB.Text + customname;
                 this.Invoke(new MethodInvoker(delegate() {
