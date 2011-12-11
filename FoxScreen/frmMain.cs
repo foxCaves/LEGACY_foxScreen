@@ -5,6 +5,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace FoxScreen
 {
@@ -31,6 +32,10 @@ namespace FoxScreen
                 tbLB.Text = lines[3];
             }
             catch { }
+
+            screenShotProgress = new frmProgress();
+            screenShotProgress.Show();
+            screenShotProgress.Hide();
         }
 
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
@@ -95,8 +100,37 @@ namespace FoxScreen
         {
             AreaScreenShot(x, y, size, "FoxScreen");
         }
+
+        internal class ScreenShotParams {
+            public readonly int x;
+            public readonly int y;
+            public readonly Size size;
+            public readonly string customname;
+
+            public ScreenShotParams(int x, int y, Size size, string customname)
+            {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.customname = customname;
+            }
+        }
+
+        Thread screenShotterThread;
+        frmProgress screenShotProgress;
+
         public void AreaScreenShot(int x, int y, Size size, string customname)
         {
+            if (screenShotterThread != null && screenShotterThread.IsAlive) return;
+            screenShotterThread = new Thread(new ParameterizedThreadStart(_AreaScreenShot));
+            screenShotterThread.Start(new ScreenShotParams(x, y, size, customname));
+        }
+
+        private void _AreaScreenShot(object obj)
+        {
+            ScreenShotParams ssp = (ScreenShotParams)obj;
+            int x = ssp.x; int y = ssp.y; Size size = ssp.size; string customname = ssp.customname;
+            
             if (customname != "FoxScreen") customname = "FS_" + customname;
 
             int imax = customname.Length;
@@ -140,6 +174,11 @@ namespace FoxScreen
             try
             {
                 customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + ".png";
+
+                screenShotProgress.SetStatus("Uploading: " + customname);
+                screenShotProgress.SetProgress(0);
+                screenShotProgress.DoShow();
+                
                 FtpWebRequest ftpr = (FtpWebRequest)FtpWebRequest.Create(tbHost.Text + "/" + customname);
                 ftpr.Method = WebRequestMethods.Ftp.UploadFile;
                 ftpr.UsePassive = true;
@@ -154,21 +193,29 @@ namespace FoxScreen
                 int readb;
                 while (mstr.CanRead)
                 {
+                    Thread.Sleep(200);
+
                     readb = (int)(mstr.Length - mstr.Position);
                     if(readb > 256) readb = 256;
                     readb = mstr.Read(buffer, 0, readb);
                     if (readb <= 0) break;
                     str.Write(buffer,0,readb);
+
+                    screenShotProgress.SetProgress(((float)mstr.Position) / ((float)mstr.Length));
                 }
                 str.Close();
                 mstr.Close();
                 FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
                 resp.Close();
 
-                customname = tbLB.Text + customname;
-                Clipboard.SetText(customname);
+                screenShotProgress.SetStatus("Saved as: " + customname);
+                screenShotProgress.SetProgress(1);
+                screenShotProgress.DoHide();
 
-                notifyIcon.ShowBalloonTip(1000, "FoxScreen: Screenshot uploaded!", "Saved as: " + customname, ToolTipIcon.Info);
+                customname = tbLB.Text + customname;
+                this.Invoke(new MethodInvoker(delegate() {
+                    Clipboard.SetText(customname);
+                }));
             }
             catch (Exception e)
             {

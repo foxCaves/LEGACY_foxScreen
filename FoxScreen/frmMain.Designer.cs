@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -39,7 +38,6 @@
             this.tbPword = new System.Windows.Forms.MaskedTextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tbLB = new System.Windows.Forms.TextBox();
-            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.btnSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -72,8 +70,8 @@
             // 
             // tbHost
             // 
-            this.tbHost.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbHost.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbHost.Location = new System.Drawing.Point(84, 12);
             this.tbHost.Name = "tbHost";
             this.tbHost.Size = new System.Drawing.Size(294, 20);
@@ -82,8 +80,8 @@
             // 
             // tbUser
             // 
-            this.tbUser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbUser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbUser.Location = new System.Drawing.Point(84, 38);
             this.tbUser.Name = "tbUser";
             this.tbUser.Size = new System.Drawing.Size(294, 20);
@@ -92,8 +90,8 @@
             // 
             // btnFullshot
             // 
-            this.btnFullshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFullshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnFullshot.Location = new System.Drawing.Point(12, 155);
             this.btnFullshot.Name = "btnFullshot";
             this.btnFullshot.Size = new System.Drawing.Size(366, 33);
@@ -104,8 +102,8 @@
             // 
             // tbPword
             // 
-            this.tbPword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbPword.Location = new System.Drawing.Point(84, 64);
             this.tbPword.Name = "tbPword";
             this.tbPword.PasswordChar = '*';
@@ -124,25 +122,18 @@
             // 
             // tbLB
             // 
-            this.tbLB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbLB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbLB.Location = new System.Drawing.Point(84, 90);
             this.tbLB.Name = "tbLB";
             this.tbLB.Size = new System.Drawing.Size(294, 20);
             this.tbLB.TabIndex = 10;
             this.tbLB.Text = "http://screen.example.com/";
             // 
-            // notifyIcon
-            // 
-            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-            this.notifyIcon.Text = "FoxScreen";
-            this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-            // 
             // btnSave
             // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Location = new System.Drawing.Point(12, 116);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(366, 33);
@@ -168,7 +159,7 @@
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
-            this.Text = "FoxScreen (c) by Doridian 2011";
+            this.Text = "FoxScreen (c) by Doridian";
             this.Shown += new System.EventHandler(this.frmMain_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -186,7 +177,6 @@
         private System.Windows.Forms.MaskedTextBox tbPword;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tbLB;
-        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.Button btnSave;
     }
 }
