@@ -193,8 +193,6 @@ namespace FoxScreen
                 int readb;
                 while (mstr.CanRead)
                 {
-                    Thread.Sleep(200);
-
                     readb = (int)(mstr.Length - mstr.Position);
                     if(readb > 256) readb = 256;
                     readb = mstr.Read(buffer, 0, readb);
