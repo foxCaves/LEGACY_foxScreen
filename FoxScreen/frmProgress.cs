@@ -31,7 +31,7 @@ namespace FoxScreen
 
             tmHide.Enabled = false;
 
-            this.Opacity = 0.8;
+            this.Opacity = 0.6;
             this.Show();
 
             Rectangle wArea = Screen.PrimaryScreen.WorkingArea;
