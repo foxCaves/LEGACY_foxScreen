@@ -30,6 +30,11 @@ namespace FoxScreen
 
         ~UploadOrganizer()
         {
+            this.Stop();
+        }
+
+        public void Stop()
+        {
             try
             {
                 uploadCheckerThread.Abort();
@@ -78,8 +83,6 @@ namespace FoxScreen
 
             try
             {
-                customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + "." + info.extension;
-
                 uploadProgress.SetStatus("Uploading: " + customname);
                 uploadProgress.SetProgress(0);
                 uploadProgress.SetBackColor(Color.Yellow);
@@ -126,7 +129,7 @@ namespace FoxScreen
             }
         }
 
-        private string FixTwoChar(int num)
+        private static string FixTwoChar(int num)
         {
             if (num < 10) return "0" + num.ToString();
             return num.ToString();
@@ -135,13 +138,11 @@ namespace FoxScreen
         internal class UploadThreadInfo
         {
             public readonly string customname;
-            public readonly string extension;
             public readonly MemoryStream mstr;
 
             public UploadThreadInfo(string customname, string extension, MemoryStream mstr)
             {
-                this.customname = customname;
-                this.extension = extension;
+                this.customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + "." + extension;
                 this.mstr = mstr;
             }
         }

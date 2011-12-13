@@ -98,21 +98,6 @@ namespace FoxScreen
             AreaScreenShot(x, y, size, "FoxScreen");
         }
 
-        internal class ScreenShotParams {
-            public readonly int x;
-            public readonly int y;
-            public readonly Size size;
-            public readonly string customname;
-
-            public ScreenShotParams(int x, int y, Size size, string customname)
-            {
-                this.x = x;
-                this.y = y;
-                this.size = size;
-                this.customname = customname;
-            }
-        }
-
         private void AreaScreenShot(int x, int y, Size size, string customname)
         {            
             if (customname != "FoxScreen") customname = "FS_" + customname;
@@ -138,26 +123,17 @@ namespace FoxScreen
             g.Clear(Color.White);
             g.CopyFromScreen(x, y, 10, 10, size);
 
-            /*Font font = new Font("Arial",(Math.Min(size.Width,size.Height) / 6),FontStyle.Regular,GraphicsUnit.Pixel);
-            StringFormat format = new StringFormat();
-            format.Alignment = StringAlignment.Center;
-            format.LineAlignment = StringAlignment.Center;
-            Brush brush = new SolidBrush(Color.FromArgb(64, 255, 0, 255));
-            g.DrawString("FoxScreen\n(c) Doridian",font,brush,new PointF(size.Width / 2, size.Height / 2),format);*/
-
             int imgHeight = 64;
             int imgWidth = (int)(((float)watermark.Width / (float)watermark.Height) * (float)imgHeight);
-            //int imgWidth = 32;
-            //int imgHeight = (watermark.Height / watermark.Width) * imgWidth;
-
 
             g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);
 
             g.Flush();
-            g.Dispose();
 
             MemoryStream mstr = new MemoryStream();
             b.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
+
+            g.Dispose();
 
             uploadOrganizer.AddUpload(customname, "png", mstr);
         }
@@ -206,6 +182,12 @@ namespace FoxScreen
         private void frmMain_Shown(object sender, EventArgs e)
         {
             if (File.Exists("config.cfg")) this.Hide();
+        }
+
+        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            uploadOrganizer.Stop();
+            Application.Exit();
         }
     }
 }

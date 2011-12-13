@@ -169,6 +169,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
             this.Text = "FoxScreen (c) by Doridian";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.Shown += new System.EventHandler(this.frmMain_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
