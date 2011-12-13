@@ -15,7 +15,10 @@ namespace FoxScreen
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+            mainFrm = new frmMain();
+            Application.Run(mainFrm);
         }
+
+        public static frmMain mainFrm;
     }
 }

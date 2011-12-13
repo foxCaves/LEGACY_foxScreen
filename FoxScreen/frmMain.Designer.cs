@@ -180,14 +180,14 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tbHost;
-        private System.Windows.Forms.TextBox tbUser;
         private System.Windows.Forms.Button btnFullshot;
-        private System.Windows.Forms.MaskedTextBox tbPword;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox tbLB;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.NotifyIcon notifyIcon;
+        public System.Windows.Forms.TextBox tbHost;
+        public System.Windows.Forms.TextBox tbUser;
+        public System.Windows.Forms.MaskedTextBox tbPword;
+        public System.Windows.Forms.TextBox tbLB;
     }
 }
 

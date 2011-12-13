@@ -13,6 +13,7 @@ namespace FoxScreen
     {
         public frmPickArea pickArea;
         KeyboardHook hook = new KeyboardHook();
+        UploadOrganizer uploadOrganizer = new UploadOrganizer();
 
         public frmMain()
         {
@@ -32,10 +33,6 @@ namespace FoxScreen
                 tbLB.Text = lines[3];
             }
             catch { }
-
-            screenShotProgress = new frmProgress();
-            screenShotProgress.Show();
-            screenShotProgress.Hide();
         }
 
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
@@ -116,21 +113,8 @@ namespace FoxScreen
             }
         }
 
-        Thread screenShotterThread;
-        frmProgress screenShotProgress;
-
-        public void AreaScreenShot(int x, int y, Size size, string customname)
-        {
-            if (screenShotterThread != null && screenShotterThread.IsAlive) return;
-            screenShotterThread = new Thread(new ParameterizedThreadStart(_AreaScreenShot));
-            screenShotterThread.Start(new ScreenShotParams(x, y, size, customname));
-        }
-
-        private void _AreaScreenShot(object obj)
-        {
-            ScreenShotParams ssp = (ScreenShotParams)obj;
-            int x = ssp.x; int y = ssp.y; Size size = ssp.size; string customname = ssp.customname;
-            
+        private void AreaScreenShot(int x, int y, Size size, string customname)
+        {            
             if (customname != "FoxScreen") customname = "FS_" + customname;
 
             int imax = customname.Length;
@@ -171,56 +155,11 @@ namespace FoxScreen
 
             g.Flush();
             g.Dispose();
-            try
-            {
-                customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + ".png";
 
-                screenShotProgress.SetStatus("Uploading: " + customname);
-                screenShotProgress.SetProgress(0);
-                screenShotProgress.SetBackColor(Color.Yellow);
-                screenShotProgress.DoShow();
-                
-                FtpWebRequest ftpr = (FtpWebRequest)FtpWebRequest.Create(tbHost.Text + "/" + customname);
-                ftpr.Method = WebRequestMethods.Ftp.UploadFile;
-                ftpr.UsePassive = true;
-                ftpr.UseBinary = true;
-                ftpr.Credentials = new NetworkCredential(tbUser.Text, tbPword.Text);
-                Stream str = ftpr.GetRequestStream();
-                MemoryStream mstr = new MemoryStream();
-                b.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
-                mstr.Seek(0,SeekOrigin.Begin);
+            MemoryStream mstr = new MemoryStream();
+            b.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
 
-                byte[] buffer = new byte[256];
-                int readb;
-                while (mstr.CanRead)
-                {
-                    readb = (int)(mstr.Length - mstr.Position);
-                    if(readb > 256) readb = 256;
-                    readb = mstr.Read(buffer, 0, readb);
-                    if (readb <= 0) break;
-                    str.Write(buffer,0,readb);
-
-                    screenShotProgress.SetProgress(((float)mstr.Position) / ((float)mstr.Length));
-                }
-                str.Close();
-                mstr.Close();
-                FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
-                resp.Close();
-
-                screenShotProgress.SetStatus("Saved as: " + customname);
-                screenShotProgress.SetProgress(1);
-                screenShotProgress.DoHide();
-                screenShotProgress.SetBackColor(Color.Green);
-
-                customname = tbLB.Text + customname;
-                this.Invoke(new MethodInvoker(delegate() {
-                    Clipboard.SetText(customname);
-                }));
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString(), "ERROR!");
-            }
+            uploadOrganizer.AddUpload(customname, "png", mstr);
         }
 
         private void btnFullshot_Click(object sender, EventArgs e)
@@ -231,12 +170,6 @@ namespace FoxScreen
         private void btnSave_Click(object sender, EventArgs e)
         {
             File.WriteAllText("config.cfg", tbHost.Text + Environment.NewLine + tbUser.Text + Environment.NewLine + tbPword.Text + Environment.NewLine + tbLB.Text);
-        }
-
-        private string FixTwoChar(int num)
-        {
-            if (num < 10) return "0" + num.ToString();
-            return num.ToString();
         }
 
 
