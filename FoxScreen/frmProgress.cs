@@ -14,11 +14,13 @@ namespace FoxScreen
         public frmProgress()
         {
             InitializeComponent();
+            targetHeight = this.Height;
         }
 
-        private void frmProgress_Load(object sender, EventArgs e)
+        private void SetLocation()
         {
-
+            Rectangle wArea = Screen.PrimaryScreen.WorkingArea;
+            this.Location = new Point(wArea.Right - this.Width, wArea.Bottom - this.Height);
         }
 
         public void DoShow()
@@ -33,10 +35,7 @@ namespace FoxScreen
 
             this.Opacity = 0.6;
             this.Show();
-
-            Rectangle wArea = Screen.PrimaryScreen.WorkingArea;
-
-            this.Location = new Point(wArea.Right - this.Width, wArea.Bottom - this.Height);
+            SetLocation();
         }
 
         public void DoHide()
@@ -84,6 +83,62 @@ namespace FoxScreen
                 tmHide.Enabled = false;
                 this.Hide();
             }
+        }
+
+        private List<Label> labels = new List<Label>();
+        public void AddLabel(string text)
+        {
+            this.Invoke(new MethodInvoker(delegate() {
+                Label lbNew = new Label();
+                lbNew.Text = text;
+                lbNew.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                lbNew.AutoSize = true;
+                labels.Add(lbNew);
+                this.Controls.Add(lbNew);
+                lbNew.Location = new Point(lbStatus.Left, -(lbNew.Height - 5));
+                targetHeight += lbNew.Height;
+            }));
+        }
+
+        public void RemoveLastLabel()
+        {
+            this.Invoke(new MethodInvoker(delegate() {
+                //int idx = labels.Count - 1;
+                Label lbOld = labels[0];
+                targetHeight -= lbOld.Height;
+                labelsMove += lbOld.Height;
+                labels.RemoveAt(0);
+                this.Controls.Remove(lbOld);
+            }));
+        }
+
+        private int targetHeight;
+        private int labelsMove;
+        private void tmResize_Tick(object sender, EventArgs e)
+        {
+            if (labelsMove > 0)
+            {
+                labelsMove--;
+                foreach (Label lbCur in labels)
+                {
+                    lbCur.Top++;
+                }
+            }
+
+            if (this.Height > targetHeight)
+            {
+                this.Height--;
+            }
+            else if (this.Height < targetHeight)
+            {
+                this.Height++;
+            }
+            else
+            {
+                return;
+            }
+
+            SetLocation();
         }
     }
 }

@@ -33,10 +33,13 @@
             this.lbUpload = new System.Windows.Forms.Label();
             this.lbStatus = new System.Windows.Forms.Label();
             this.tmHide = new System.Windows.Forms.Timer(this.components);
+            this.tmResize = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // pbUpload
             // 
+            this.pbUpload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pbUpload.Location = new System.Drawing.Point(13, 35);
             this.pbUpload.Name = "pbUpload";
             this.pbUpload.Size = new System.Drawing.Size(225, 18);
@@ -44,6 +47,7 @@
             // 
             // lbUpload
             // 
+            this.lbUpload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lbUpload.AutoSize = true;
             this.lbUpload.Location = new System.Drawing.Point(238, 38);
             this.lbUpload.Name = "lbUpload";
@@ -53,6 +57,8 @@
             // 
             // lbStatus
             // 
+            this.lbStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lbStatus.AutoSize = true;
             this.lbStatus.Location = new System.Drawing.Point(13, 11);
             this.lbStatus.Name = "lbStatus";
@@ -64,6 +70,12 @@
             // 
             this.tmHide.Interval = 1000;
             this.tmHide.Tick += new System.EventHandler(this.tmHide_Tick);
+            // 
+            // tmResize
+            // 
+            this.tmResize.Enabled = true;
+            this.tmResize.Interval = 10;
+            this.tmResize.Tick += new System.EventHandler(this.tmResize_Tick);
             // 
             // frmProgress
             // 
@@ -79,7 +91,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "frmProgress";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.frmProgress_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -91,5 +102,6 @@
         private System.Windows.Forms.Label lbUpload;
         private System.Windows.Forms.Label lbStatus;
         private System.Windows.Forms.Timer tmHide;
+        private System.Windows.Forms.Timer tmResize;
     }
 }

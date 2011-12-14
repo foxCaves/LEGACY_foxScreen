@@ -50,7 +50,7 @@ namespace FoxScreen
 
         public void AddUpload(string customname, string extension, MemoryStream mstr)
         {
-            uploads.Enqueue(new UploadThreadInfo(customname, extension, mstr));
+            uploads.Enqueue(new UploadThreadInfo(customname, extension, mstr, uploadProgress));
         }
 
         private void UploadCheckerThread()
@@ -83,7 +83,8 @@ namespace FoxScreen
 
             try
             {
-                uploadProgress.SetStatus("Uploading: " + customname);
+                uploadProgress.RemoveLastLabel();
+                uploadProgress.SetStatus(customname);
                 uploadProgress.SetProgress(0);
                 uploadProgress.SetBackColor(Color.Yellow);
                 uploadProgress.DoShow();
@@ -112,7 +113,6 @@ namespace FoxScreen
                 FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
                 resp.Close();
 
-                uploadProgress.SetStatus("Saved as: " + customname);
                 uploadProgress.SetProgress(1);
                 uploadProgress.DoHide();
                 uploadProgress.SetBackColor(Color.Green);
@@ -140,9 +140,12 @@ namespace FoxScreen
             public readonly string customname;
             public readonly MemoryStream mstr;
 
-            public UploadThreadInfo(string customname, string extension, MemoryStream mstr)
+            public UploadThreadInfo(string customname, string extension, MemoryStream mstr, frmProgress uploadProgress)
             {
                 this.customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + "." + extension;
+
+                uploadProgress.AddLabel(this.customname);
+                
                 this.mstr = mstr;
             }
         }
