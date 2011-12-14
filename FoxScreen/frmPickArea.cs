@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gma.UserActivityMonitor;
+using MouseKeyboardActivityMonitor.WinApi;
+using MouseKeyboardActivityMonitor;
 
 namespace FoxScreen
 {
     public partial class frmPickArea : Form
     {
+        private KeyboardHookListener keyboardHookManager;
+        private MouseHookListener mouseHookManager;
+
         public frmMain main;
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -18,9 +22,15 @@ namespace FoxScreen
         {
             InitializeComponent();
 
-            HookManager.MouseMove += new MouseEventHandler(HookManager_MouseMove);
-            HookManager.KeyDown += new KeyEventHandler(HookManager_KeyDown);
-            HookManager.MouseClick += new MouseEventHandler(HookManager_MouseClick);
+            keyboardHookManager = new KeyboardHookListener(new GlobalHooker());
+            keyboardHookManager.Enabled = true;
+
+            mouseHookManager = new MouseHookListener(new GlobalHooker());
+            mouseHookManager.Enabled = true;
+
+            mouseHookManager.MouseMove += HookManager_MouseMove;
+            mouseHookManager.MouseClick += HookManager_MouseClick;
+            keyboardHookManager.KeyDown += HookManager_KeyDown; 
 
             GetCursorPos(ref startPos);
 
@@ -67,9 +77,11 @@ namespace FoxScreen
         public new void Close()
         {
             main.pickArea = null;
-            HookManager.MouseMove -= new MouseEventHandler(HookManager_MouseMove);
-            HookManager.KeyDown -= new KeyEventHandler(HookManager_KeyDown);
-            HookManager.MouseClick -= new MouseEventHandler(HookManager_MouseClick);
+
+            mouseHookManager.MouseMove -= HookManager_MouseMove;
+            mouseHookManager.MouseClick -= HookManager_MouseClick;
+            keyboardHookManager.KeyDown -= HookManager_KeyDown;
+
             base.Close();
             this.Dispose();
         }
