@@ -198,16 +198,7 @@ namespace FoxScreen
 
         private void notifyIcon_Click(object sender, EventArgs e)
         {
-            if (dropForm.targetOpacity <= 0 || !dropForm.Visible)
-            {
-                dropForm.targetOpacity = 0.5;
-                if (!dropForm.Visible)
-                    dropForm.Show();
-            }
-            else
-            {
-                dropForm.targetOpacity = 0.0;
-            }
+            dropForm.ToggleVisibility();
         }
     }
 }

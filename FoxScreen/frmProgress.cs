@@ -95,7 +95,7 @@ namespace FoxScreen
                 lbNew.AutoSize = true;
                 labels.Add(lbNew);
                 this.Controls.Add(lbNew);
-                lbNew.Location = new Point(lbStatus.Left, -(lbNew.Height - 5));
+                lbNew.Location = new Point(lbStatus.Left, -(lbNew.Height - 5 - (this.Height - targetHeight)));
                 targetHeight += lbNew.Height;
             }));
         }
@@ -103,7 +103,6 @@ namespace FoxScreen
         public void RemoveLastLabel()
         {
             this.Invoke(new MethodInvoker(delegate() {
-                //int idx = labels.Count - 1;
                 Label lbOld = labels[0];
                 targetHeight -= lbOld.Height;
                 labelsMove += lbOld.Height;
