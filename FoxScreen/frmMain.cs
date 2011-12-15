@@ -12,17 +12,23 @@ namespace FoxScreen
     public partial class frmMain : Form
     {
         public frmPickArea pickArea;
-        KeyboardHook hook = new KeyboardHook();
+        frmDropArea dropForm;
+
+        KeyboardHook kbHook = new KeyboardHook();
         UploadOrganizer uploadOrganizer = new UploadOrganizer();
 
         public frmMain()
         {
             InitializeComponent();
 
-            hook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
-            hook.RegisterHotKey(0, Keys.PrintScreen);
-            hook.RegisterHotKey(ModifierKeysH.Alt, Keys.PrintScreen);
-            hook.RegisterHotKey(ModifierKeysH.Control, Keys.PrintScreen);
+            kbHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
+            kbHook.RegisterHotKey(0, Keys.PrintScreen);
+            kbHook.RegisterHotKey(ModifierKeysH.Alt, Keys.PrintScreen);
+            kbHook.RegisterHotKey(ModifierKeysH.Control, Keys.PrintScreen);
+
+            dropForm = new frmDropArea(uploadOrganizer);
+            dropForm.Show();
+            dropForm.Hide();
 
             try
             {
@@ -188,6 +194,20 @@ namespace FoxScreen
         {
             uploadOrganizer.Stop();
             Application.Exit();
+        }
+
+        private void notifyIcon_Click(object sender, EventArgs e)
+        {
+            if (dropForm.targetOpacity <= 0 || !dropForm.Visible)
+            {
+                dropForm.targetOpacity = 0.5;
+                if (!dropForm.Visible)
+                    dropForm.Show();
+            }
+            else
+            {
+                dropForm.targetOpacity = 0.0;
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace FoxScreen
 {
-    class UploadOrganizer
+    public class UploadOrganizer
     {
         frmProgress uploadProgress;
         Thread uploadThread;
@@ -120,7 +120,20 @@ namespace FoxScreen
                 customname = Program.mainFrm.tbLB.Text + customname;
                 Program.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
-                    Clipboard.SetText(customname);
+                    string cbtext = Clipboard.GetText();
+                    if (cbtext == null)
+                    {
+                        cbtext = "";
+                    }
+                    else if (!cbtext.StartsWith(Program.mainFrm.tbLB.Text))
+                    {
+                        cbtext = "";
+                    }
+                    else
+                    {
+                        cbtext += "\n";
+                    }
+                    Clipboard.SetText(cbtext + customname);
                 }));
             }
             catch (Exception e)
