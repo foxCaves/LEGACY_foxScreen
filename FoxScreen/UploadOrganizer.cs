@@ -120,18 +120,22 @@ namespace FoxScreen
                 customname = Program.mainFrm.tbLB.Text + customname;
                 Program.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
-                    string cbtext = Clipboard.GetText();
-                    if (cbtext == null)
-                    {
-                        cbtext = "";
-                    }
-                    else if (!cbtext.StartsWith(Program.mainFrm.tbLB.Text))
+                    string cbtext = "";
+                    try {
+                        cbtext = Clipboard.GetText();
+                        if (cbtext == null)
+                        {
+                            cbtext = "";
+                        }
+                    } catch { }
+
+                    if (!cbtext.StartsWith(Program.mainFrm.tbLB.Text))
                     {
                         cbtext = "";
                     }
                     else
                     {
-                        cbtext += "\n";
+                        cbtext += "\r\n";
                     }
                     Clipboard.SetText(cbtext + customname);
                 }));
