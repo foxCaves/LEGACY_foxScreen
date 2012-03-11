@@ -48,9 +48,9 @@ namespace FoxScreen
             catch { }
         }
 
-        public void AddUpload(string customname, string extension, MemoryStream mstr)
+        public void AddUpload(string customname, MemoryStream mstr)
         {
-            uploads.Enqueue(new UploadThreadInfo(customname, extension, mstr, uploadProgress));
+            uploads.Enqueue(new UploadThreadInfo(customname, mstr, uploadProgress));
         }
 
         private void UploadCheckerThread()
@@ -72,7 +72,7 @@ namespace FoxScreen
         private void UploadThread(object obj)
         {
             UploadThreadInfo info = (UploadThreadInfo)obj;
-            string customname = info.customname;
+            string customname = info.directory + "/" + info.customname;
             MemoryStream mstr = info.mstr;
 
             try
@@ -89,11 +89,23 @@ namespace FoxScreen
                 uploadProgress.SetBackColor(Color.Yellow);
                 uploadProgress.DoShow();
 
-                FtpWebRequest ftpr = (FtpWebRequest)FtpWebRequest.Create(Program.mainFrm.tbHost.Text + "/" + customname);
+                NetworkCredential credentials = new NetworkCredential(Program.mainFrm.tbUser.Text, Program.mainFrm.tbPword.Text);
+                FtpWebRequest ftpr;
+                try
+                {
+                    ftpr = (FtpWebRequest)FtpWebRequest.Create(Program.mainFrm.tbHost.Text + "/" + info.directory);
+                    ftpr.Method = WebRequestMethods.Ftp.MakeDirectory;
+                    ftpr.Credentials = credentials;
+                    ftpr.UsePassive = true;
+                    ftpr.UseBinary = true;
+                    ftpr.GetResponse().Close();
+                } catch { }
+                
+                ftpr = (FtpWebRequest)FtpWebRequest.Create(Program.mainFrm.tbHost.Text + "/" + customname);
                 ftpr.Method = WebRequestMethods.Ftp.UploadFile;
+                ftpr.Credentials = credentials;
                 ftpr.UsePassive = true;
                 ftpr.UseBinary = true;
-                ftpr.Credentials = new NetworkCredential(Program.mainFrm.tbUser.Text, Program.mainFrm.tbPword.Text);
                 Stream str = ftpr.GetRequestStream();
 
                 byte[] buffer = new byte[256];
@@ -155,15 +167,22 @@ namespace FoxScreen
         internal class UploadThreadInfo
         {
             public readonly string customname;
+            public readonly string directory;
             public readonly MemoryStream mstr;
 
-            public UploadThreadInfo(string customname, string extension, MemoryStream mstr, frmProgress uploadProgress)
+            public UploadThreadInfo(string directory, string customname, MemoryStream mstr, frmProgress uploadProgress)
             {
-                this.customname = customname + "_" + FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second) + "." + extension;
+                this.directory = directory;
+                this.customname = customname;
 
                 uploadProgress.AddLabel(this.customname);
                 
                 this.mstr = mstr;
+            }
+
+            public UploadThreadInfo(string customname, MemoryStream mstr, frmProgress uploadProgress) : this(null, customname, mstr, uploadProgress)
+            {
+                this.directory = FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second);
             }
         }
     }

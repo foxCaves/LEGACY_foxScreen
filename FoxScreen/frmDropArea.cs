@@ -54,32 +54,15 @@ namespace FoxScreen
                     if(fPathPos2 > fPathPos) fPathPos = fPathPos2;
                     string filename = file.Substring(fPathPos + 1);
 
-                    int fPosDot = filename.LastIndexOf('.');
-                    string extension;
-                    if (fPosDot < 0)
-                    {
-                        extension = "bin";
-                    }
-                    else if (fPosDot == 0)
-                    {
-                        extension = filename.Substring(1);
-                        filename = "file";
-                    }
-                    else
-                    {
-                        extension = filename.Substring(fPosDot + 1);
-                        filename = filename.Substring(0, fPosDot);
-                    }
-
                     MemoryStream mstr = new MemoryStream(File.ReadAllBytes(file));
-                    uploadOrganizer.AddUpload("FS_" + filename, extension, mstr);
+                    uploadOrganizer.AddUpload(filename, mstr);
                 }
             }
 
             string text = e.Data.GetData(DataFormats.Text) as string;
             if (text != null)
             {
-                uploadOrganizer.AddUpload("FS_paste", "txt", new MemoryStream(System.Text.Encoding.ASCII.GetBytes(text)));
+                uploadOrganizer.AddUpload("paste.txt", new MemoryStream(System.Text.Encoding.ASCII.GetBytes(text)));
             }
         }
 

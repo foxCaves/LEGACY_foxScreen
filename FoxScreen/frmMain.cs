@@ -93,7 +93,7 @@ namespace FoxScreen
         }
         public void AreaScreenShot(int x, int y, int width, int height)
         {
-            AreaScreenShot(x, y, width, height, "FoxScreen");
+            AreaScreenShot(x, y, width, height, "Screenshot");
         }
         public void AreaScreenShot(int x, int y, int width, int height, string customname)
         {
@@ -101,13 +101,11 @@ namespace FoxScreen
         }
         public void AreaScreenShot(int x, int y, Size size)
         {
-            AreaScreenShot(x, y, size, "FoxScreen");
+            AreaScreenShot(x, y, size, "Screenshot");
         }
 
         private void AreaScreenShot(int x, int y, Size size, string customname)
         {            
-            if (customname != "FoxScreen") customname = "FS_" + customname;
-
             int imax = customname.Length;
             char c;
             char[] cna = customname.ToCharArray(0, imax);
@@ -141,7 +139,7 @@ namespace FoxScreen
 
             g.Dispose();
 
-            uploadOrganizer.AddUpload(customname, "png", mstr);
+            uploadOrganizer.AddUpload(customname + ".png", mstr);
         }
 
         private void btnFullshot_Click(object sender, EventArgs e)
