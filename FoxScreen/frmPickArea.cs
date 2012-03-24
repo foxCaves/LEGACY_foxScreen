@@ -3,22 +3,23 @@ using System.Drawing;
 using System.Windows.Forms;
 using MouseKeyboardActivityMonitor.WinApi;
 using MouseKeyboardActivityMonitor;
+using System.Collections.Generic;
 
 namespace FoxScreen
 {
     public partial class frmPickArea : Form
     {
         private KeyboardHookListener keyboardHookManager;
-        private MouseHookListener mouseHookManager;
 
         public frmMain main;
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         static extern bool GetCursorPos(ref Point lpPoint);
 
-        Point startPos = new Point();
+        private Bitmap screenBitmap;
 
-        private Bitmap screen;
+        private PullPoint top_left, bottom_right;
+        private PullPoint[] pullPoints = new PullPoint[4];
 
         public frmPickArea(frmMain mainFrm)
         {
@@ -28,20 +29,31 @@ namespace FoxScreen
 
             keyboardHookManager = new KeyboardHookListener(new GlobalHooker());
             keyboardHookManager.Enabled = true;
-
-            mouseHookManager = new MouseHookListener(new GlobalHooker());
-            mouseHookManager.Enabled = true;
-
-            mouseHookManager.MouseMove += HookManager_MouseMove;
-            mouseHookManager.MouseClick += HookManager_MouseClick;
             keyboardHookManager.KeyDown += HookManager_KeyDown; 
 
-            GetCursorPos(ref startPos);
-
-            AdaptTo(startPos);
-
             Rectangle rect = main.screenshotManager.GetCompleteScreen();
-            screen = main.screenshotManager.MakeBitmapFromScreen(rect.X, rect.Y, rect.Size);
+            screenBitmap = main.screenshotManager.MakeBitmapFromScreen(rect.X, rect.Y, rect.Size);
+
+            this.Location = rect.Location;
+            this.Size = rect.Size;
+
+            pullPoints[0] = new PullPoint();
+            pullPoints[1] = new PullPoint();
+            pullPoints[2] = new PullPoint();
+            pullPoints[3] = new PullPoint();
+
+            pullPoints[0].addSyncPointX(pullPoints[2]);
+            pullPoints[1].addSyncPointX(pullPoints[3]);
+            pullPoints[0].addSyncPointY(pullPoints[1]);
+            pullPoints[2].addSyncPointY(pullPoints[3]);
+
+            top_left = pullPoints[0];
+            bottom_right = pullPoints[3];
+
+            top_left.X = 0;
+            top_left.Y = 0;
+            bottom_right.X = this.Width;
+            bottom_right.Y = this.Height;
         }
 
         ~frmPickArea()
@@ -49,24 +61,9 @@ namespace FoxScreen
             this.Close();
         }
 
-        private void frmPickArea_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.Clear(Color.Lime);
-            g.DrawRectangle(Pens.Red, 0, 0, this.Width - 1, this.Height - 1);
-        }
-
         private void CloseMeEvent(object sender, EventArgs e)
         {
             this.Cancel();
-        }
-
-        void HookManager_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left)
-                this.Cancel();
-            else
-                this.DoShot();
         }
 
         private void HookManager_KeyDown(object sender, KeyEventArgs e)
@@ -87,8 +84,6 @@ namespace FoxScreen
         {
             main.pickArea = null;
 
-            mouseHookManager.MouseMove -= HookManager_MouseMove;
-            mouseHookManager.MouseClick -= HookManager_MouseClick;
             keyboardHookManager.KeyDown -= HookManager_KeyDown;
 
             base.Close();
@@ -102,47 +97,161 @@ namespace FoxScreen
 
         private void DoShot()
         {
-            this.Visible = false;
-            this.Refresh();
-
-            Rectangle rect = main.screenshotManager.GetCompleteScreen();
-            
-            rect = new Rectangle((this.Left + 1) - rect.Left, (this.Top + 1) - rect.Top, this.Width - 2, this.Height - 2);
-
-            main.screenshotManager.MakeScreenShotFromBitmap("Area", screen, rect);
+            main.screenshotManager.MakeScreenShotFromBitmap("Area", screenBitmap, getSelectionRectangle());
             this.Close();
         }
 
-        private void HookManager_MouseMove(object sender, MouseEventArgs e)
+        private Rectangle getSelectionRectangle()
         {
-            AdaptTo(new Point(e.X, e.Y));
+            Rectangle rect = new Rectangle();
+            rect.X = top_left.X;
+            rect.Y = top_left.Y;
+            rect.Width = bottom_right.X - top_left.X;
+            rect.Height = bottom_right.Y - top_left.Y;
+            return rect;
         }
 
-        private void AdaptTo(Point e)
+        private Brush alphaBrush = new SolidBrush(Color.FromArgb(128, 100, 100, 100));
+        private void frmPickArea_Paint(object sender, PaintEventArgs e)
         {
-            if (e.X < startPos.X)
+            Graphics g = e.Graphics;
+            g.DrawImageUnscaled(screenBitmap, 0, 0);
+
+            Rectangle selection = getSelectionRectangle();
+            g.DrawRectangle(Pens.Red, selection);
+            
+            g.SetClip(new Region(selection), System.Drawing.Drawing2D.CombineMode.Exclude);
+            g.FillRectangle(alphaBrush, new Rectangle(0, 0, this.Width, this.Height));
+        }
+
+        class PullPoint
+        {
+            int m_X;
+            public int X
             {
-                this.Left = e.X - 1;
-                this.Width = (startPos.X - e.X) + 2;
-            }
-            else
-            {
-                this.Left = startPos.X - 1;
-                this.Width = (e.X - startPos.X) + 2;
+                get
+                {
+                    return m_X;
+                }
+                set
+                {
+                    m_X = value;
+                    foreach (PullPoint p in syncX)
+                    {
+                        if (p == this) continue;
+                        p.m_X = value;
+                    }
+                }
             }
 
-            if (e.Y < startPos.Y)
+            int m_Y;
+            public int Y
             {
-                this.Top = e.Y - 1;
-                this.Height = (startPos.Y - e.Y) + 2;
-            }
-            else
-            {
-                this.Top = startPos.Y - 1;
-                this.Height = (e.Y - startPos.Y) + 2;
+                get
+                {
+                    return m_Y;
+                }
+                set
+                {
+                    m_Y = value;
+                    foreach (PullPoint p in syncY)
+                    {
+                        if (p == this) continue;
+                        p.m_Y = value;
+                    }
+                }
             }
 
-            this.Refresh();
+            public PullPoint() : this(0, 0)
+            {
+
+            }
+
+            public PullPoint(int X, int Y)
+            {
+                m_X = X;
+                m_Y = Y;
+            }
+
+            private List<PullPoint> syncX = new List<PullPoint>();
+            public void addSyncPointX(PullPoint other)
+            {
+                syncX.Add(other);
+                other.syncX.Add(this);
+            }
+            public void delSyncPointX(PullPoint other)
+            {
+                syncX.Remove(other);
+                other.syncX.Remove(this);
+            }
+
+            private List<PullPoint> syncY = new List<PullPoint>();
+            public void addSyncPointY(PullPoint other)
+            {
+                syncY.Add(other);
+                other.syncY.Add(this);
+            }
+            public void delSyncPointY(PullPoint other)
+            {
+                syncY.Remove(other);
+                other.syncY.Remove(this);
+            }
+
+            public int distanceSq(Point other)
+            {
+                int XD = other.X - this.m_X;
+                int YD = other.Y - this.m_Y;
+                return (XD * XD) + (YD * YD);
+            }
+
+            public int distanceSq(PullPoint other)
+            {
+                int XD = other.m_X - this.m_X;
+                int YD = other.m_Y - this.m_Y;
+                return (XD * XD) + (YD * YD);
+            }
+
+            public Point getPoint()
+            {
+                return new Point(X, Y);
+            }
+        }
+
+        private PullPoint currentPulling;
+        private void frmPickArea_MouseDown(object sender, MouseEventArgs e)
+        {
+            int minDist = int.MaxValue;
+            PullPoint decided = null;
+            Point pos = e.Location;
+            foreach(PullPoint p in pullPoints)
+            {
+                int dist = p.distanceSq(pos);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    decided = p;
+                }
+                else if (dist == minDist)
+                {
+                    decided = null;
+                }
+            }
+            currentPulling = decided;
+        }
+
+        private void frmPickArea_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (currentPulling == null) return;
+
+            currentPulling.X = e.X;
+            currentPulling.Y = e.Y;
+
+            this.Invalidate();
+        }
+
+        private void frmPickArea_MouseUp(object sender, MouseEventArgs e)
+        {
+            currentPulling = null;
         }
     }
 }

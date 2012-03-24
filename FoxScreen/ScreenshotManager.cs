@@ -118,10 +118,10 @@ namespace FoxScreen
 
         public Bitmap MakeBitmapFromScreen(int x, int y, Size size)
         {
-            Bitmap b = new Bitmap(size.Width + 20, size.Height + 20, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Bitmap b = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
             g.Clear(Color.White);
-            g.CopyFromScreen(x, y, 10, 10, size);
+            g.CopyFromScreen(x, y, 0, 0, size);
             g.Flush();
             return b;
         }
