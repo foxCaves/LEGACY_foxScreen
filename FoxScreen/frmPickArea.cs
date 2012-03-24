@@ -18,8 +18,12 @@ namespace FoxScreen
 
         Point startPos = new Point();
 
-        public frmPickArea()
+        private Bitmap screen;
+
+        public frmPickArea(frmMain mainFrm)
         {
+            main = mainFrm;
+
             InitializeComponent();
 
             keyboardHookManager = new KeyboardHookListener(new GlobalHooker());
@@ -35,6 +39,9 @@ namespace FoxScreen
             GetCursorPos(ref startPos);
 
             AdaptTo(startPos);
+
+            Rectangle rect = main.screenshotManager.GetCompleteScreen();
+            screen = main.screenshotManager.MakeBitmapFromScreen(rect.X, rect.Y, rect.Size);
         }
 
         ~frmPickArea()
@@ -97,7 +104,12 @@ namespace FoxScreen
         {
             this.Visible = false;
             this.Refresh();
-            main.AreaScreenShot(this.Left - 1, this.Top - 1, this.Width - 2, this.Height - 2);
+
+            Rectangle rect = main.screenshotManager.GetCompleteScreen();
+            
+            rect = new Rectangle((this.Left + 1) - rect.Left, (this.Top + 1) - rect.Top, this.Width - 2, this.Height - 2);
+
+            main.screenshotManager.MakeScreenShotFromBitmap("Area", screen, rect);
             this.Close();
         }
 
