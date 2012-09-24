@@ -36,10 +36,8 @@ namespace FoxScreen
             try
             {
                 string[] lines = File.ReadAllLines("config.cfg");
-                tbHost.Text = lines[0];
-                tbUser.Text = lines[1];
-                tbPword.Text = lines[2];
-                tbLB.Text = lines[3];
+                tbUser.Text = lines[0];
+                tbPword.Text = lines[1];
             }
             catch { }
         }
@@ -77,13 +75,17 @@ namespace FoxScreen
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("config.cfg", tbHost.Text + Environment.NewLine + tbUser.Text + Environment.NewLine + tbPword.Text + Environment.NewLine + tbLB.Text);
+            File.WriteAllText("config.cfg", tbUser.Text + Environment.NewLine + tbPword.Text);
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (this.Visible) this.Hide();
             else { this.Show(); this.Activate(); }
+
+            dropForm.Opacity = 0;
+            dropForm.targetOpacity = 0;
+            dropForm.Hide();
         }
 
         private void frmMain_Shown(object sender, EventArgs e)
@@ -100,6 +102,11 @@ namespace FoxScreen
         private void notifyIcon_Click(object sender, EventArgs e)
         {
             dropForm.ToggleVisibility();
+        }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

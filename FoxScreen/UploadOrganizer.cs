@@ -18,6 +18,8 @@ namespace FoxScreen
 
         Queue<UploadThreadInfo> uploads = new Queue<UploadThreadInfo>();
 
+        public const string MAINURL = "https://push.doridian.de/";
+
         public UploadOrganizer()
         {
             uploadProgress = new frmProgress();
@@ -50,6 +52,18 @@ namespace FoxScreen
 
         public void AddUpload(string customname, MemoryStream mstr)
         {
+            int imax = customname.Length;
+            char c;
+            char[] cna = customname.ToCharArray(0, imax);
+            for (int i = 0; i < imax; i++)
+            {
+                c = cna[i];
+                if (c == '<' || c == '>')
+                {
+                    cna[i] = '_';
+                }
+            }
+            customname = new String(cna);
             uploads.Enqueue(new UploadThreadInfo(customname, mstr, uploadProgress));
         }
 
@@ -72,7 +86,7 @@ namespace FoxScreen
         private void UploadThread(object obj)
         {
             UploadThreadInfo info = (UploadThreadInfo)obj;
-            string customname = info.directory + "/" + info.customname;
+            string customname = info.customname;
             MemoryStream mstr = info.mstr;
 
             try
@@ -90,23 +104,12 @@ namespace FoxScreen
                 uploadProgress.DoShow();
 
                 NetworkCredential credentials = new NetworkCredential(Program.mainFrm.tbUser.Text, Program.mainFrm.tbPword.Text);
-                FtpWebRequest ftpr;
-                try
-                {
-                    ftpr = (FtpWebRequest)FtpWebRequest.Create(Program.mainFrm.tbHost.Text + "/" + info.directory);
-                    ftpr.Method = WebRequestMethods.Ftp.MakeDirectory;
-                    ftpr.Credentials = credentials;
-                    ftpr.UsePassive = true;
-                    ftpr.UseBinary = true;
-                    ftpr.GetResponse().Close();
-                } catch { }
-                
-                ftpr = (FtpWebRequest)FtpWebRequest.Create(Program.mainFrm.tbHost.Text + "/" + customname);
-                ftpr.Method = WebRequestMethods.Ftp.UploadFile;
-                ftpr.Credentials = credentials;
-                ftpr.UsePassive = true;
-                ftpr.UseBinary = true;
-                Stream str = ftpr.GetRequestStream();
+
+                HttpWebRequest hwr = (HttpWebRequest)HttpWebRequest.Create(MAINURL + "create?" + customname);
+                hwr.Method = WebRequestMethods.Http.Put;
+                hwr.Credentials = credentials;
+                hwr.Proxy = null;
+                Stream str = hwr.GetRequestStream();
 
                 byte[] buffer = new byte[256];
                 int readb;
@@ -122,14 +125,17 @@ namespace FoxScreen
                 }
                 str.Close();
                 mstr.Close();
-                FtpWebResponse resp = (FtpWebResponse)ftpr.GetResponse();
+
+                HttpWebResponse resp = (HttpWebResponse)hwr.GetResponse();
+                StreamReader respreader = new StreamReader(resp.GetResponseStream());
+                customname = MAINURL + respreader.ReadToEnd();
+                respreader.Close();
                 resp.Close();
 
                 uploadProgress.SetProgress(1);
                 uploadProgress.DoHide();
                 uploadProgress.SetBackColor(Color.Green);
 
-                customname = Program.mainFrm.tbLB.Text + customname;
                 Program.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
                     string cbtext = "";
@@ -141,7 +147,7 @@ namespace FoxScreen
                         }
                     } catch { }
 
-                    if (!cbtext.StartsWith(Program.mainFrm.tbLB.Text))
+                    if (!cbtext.StartsWith(MAINURL))
                     {
                         cbtext = "";
                     }
@@ -149,7 +155,12 @@ namespace FoxScreen
                     {
                         cbtext += "\r\n";
                     }
-                    Clipboard.SetText(cbtext + customname);
+
+                    try
+                    {
+                        Clipboard.SetText(cbtext + customname);
+                    }
+                    catch { }
                 }));
             }
             catch (Exception e)
@@ -167,22 +178,15 @@ namespace FoxScreen
         internal class UploadThreadInfo
         {
             public readonly string customname;
-            public readonly string directory;
             public readonly MemoryStream mstr;
 
-            public UploadThreadInfo(string directory, string customname, MemoryStream mstr, frmProgress uploadProgress)
+            public UploadThreadInfo(string customname, MemoryStream mstr, frmProgress uploadProgress)
             {
-                this.directory = directory;
                 this.customname = customname;
 
                 uploadProgress.AddLabel(this.customname);
                 
                 this.mstr = mstr;
-            }
-
-            public UploadThreadInfo(string customname, MemoryStream mstr, frmProgress uploadProgress) : this(null, customname, mstr, uploadProgress)
-            {
-                this.directory = FixTwoChar(DateTime.Now.Day) + "-" + FixTwoChar(DateTime.Now.Month) + "-" + DateTime.Now.Year + "_" + FixTwoChar(DateTime.Now.Hour) + "-" + FixTwoChar(DateTime.Now.Minute) + "-" + FixTwoChar(DateTime.Now.Second);
             }
         }
     }

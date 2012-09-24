@@ -66,6 +66,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmDropArea";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.frmDropArea_Load);
             this.Click += new System.EventHandler(this.frmDropArea_Click);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmDropArea_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmDropArea_DragEnter);

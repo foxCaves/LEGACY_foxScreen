@@ -64,20 +64,7 @@ namespace FoxScreen
 
         public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap, Rectangle rect)
         {
-            int imax = customname.Length;
-            char c;
-            char[] cna = customname.ToCharArray(0, imax);
-            for (int i = 0; i < imax; i++)
-            {
-                c = cna[i];
-                if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') && c != '.' && c != '-' && c != '_')
-                {
-                    cna[i] = '_';
-                }
-            }
-            customname = new String(cna);
-
-            Image watermark = Image.FromFile("watermark.png");
+            //Image watermark = Image.FromFile("watermark.png");
 
             Bitmap b = new Bitmap(rect.Width, rect.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
@@ -85,10 +72,10 @@ namespace FoxScreen
             g.Clear(Color.White);
             g.DrawImage(bitmap, new Rectangle(0, 0, rect.Width, rect.Height), rect, GraphicsUnit.Pixel);
 
-            int imgHeight = 64;
+            /*int imgHeight = 64;
             int imgWidth = (int)(((float)watermark.Width / (float)watermark.Height) * (float)imgHeight);
 
-            g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);
+            g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);*/
 
             g.Flush();
 

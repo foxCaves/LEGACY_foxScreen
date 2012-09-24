@@ -92,7 +92,7 @@ namespace FoxScreen
             }
         }
 
-        private double targetOpacity;
+        internal double targetOpacity;
         private void tmOpacity_Tick(object sender, EventArgs e)
         {
             if (this.Opacity > targetOpacity)
@@ -123,6 +123,11 @@ namespace FoxScreen
         private void frmDropArea_Click(object sender, EventArgs e)
         {
             this.ToggleVisibility();
+        }
+
+        private void frmDropArea_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
