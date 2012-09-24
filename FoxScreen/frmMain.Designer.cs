@@ -123,7 +123,7 @@
             this.Controls.Add(this.label2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
-            this.Text = "FoxScreen (c) by Doridian";
+            this.Text = "foxScreen (c) by Doridian";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.Shown += new System.EventHandler(this.frmMain_Shown);
