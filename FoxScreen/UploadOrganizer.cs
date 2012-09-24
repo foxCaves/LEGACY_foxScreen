@@ -18,7 +18,7 @@ namespace FoxScreen
 
         Queue<UploadThreadInfo> uploads = new Queue<UploadThreadInfo>();
 
-        public const string MAINURL = "https://push.doridian.de/";
+        public const string MAINURL = "https://foxcav.es/";
 
         public UploadOrganizer()
         {
