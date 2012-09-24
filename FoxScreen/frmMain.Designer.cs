@@ -45,7 +45,7 @@
             this.label2.Location = new System.Drawing.Point(12, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(32, 13);
-            this.label2.TabIndex = 1;
+            this.label2.TabIndex = 10;
             this.label2.Text = "User:";
             // 
             // label3
@@ -54,7 +54,7 @@
             this.label3.Location = new System.Drawing.Point(12, 41);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 13);
-            this.label3.TabIndex = 2;
+            this.label3.TabIndex = 20;
             this.label3.Text = "Password:";
             // 
             // tbUser
@@ -64,7 +64,7 @@
             this.tbUser.Location = new System.Drawing.Point(84, 12);
             this.tbUser.Name = "tbUser";
             this.tbUser.Size = new System.Drawing.Size(294, 20);
-            this.tbUser.TabIndex = 4;
+            this.tbUser.TabIndex = 1;
             this.tbUser.Text = "anonymous";
             // 
             // btnFullshot
@@ -74,7 +74,7 @@
             this.btnFullshot.Location = new System.Drawing.Point(12, 104);
             this.btnFullshot.Name = "btnFullshot";
             this.btnFullshot.Size = new System.Drawing.Size(366, 33);
-            this.btnFullshot.TabIndex = 6;
+            this.btnFullshot.TabIndex = 4;
             this.btnFullshot.Text = "Full screenshot";
             this.btnFullshot.UseVisualStyleBackColor = true;
             this.btnFullshot.Click += new System.EventHandler(this.btnFullshot_Click);
@@ -87,7 +87,7 @@
             this.tbPword.Name = "tbPword";
             this.tbPword.PasswordChar = '*';
             this.tbPword.Size = new System.Drawing.Size(294, 20);
-            this.tbPword.TabIndex = 8;
+            this.tbPword.TabIndex = 2;
             this.tbPword.Text = "anonymous";
             // 
             // btnSave
@@ -97,7 +97,7 @@
             this.btnSave.Location = new System.Drawing.Point(12, 65);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(366, 33);
-            this.btnSave.TabIndex = 11;
+            this.btnSave.TabIndex = 3;
             this.btnSave.Text = "Save credentials";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
