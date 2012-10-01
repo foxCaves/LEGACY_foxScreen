@@ -138,7 +138,8 @@ namespace FoxScreen
 
                 Program.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
-                    string cbtext = "";
+                    Clipboard.SetText(customname);
+                    /*string cbtext = "";
                     try {
                         cbtext = Clipboard.GetText();
                         if (cbtext == null)
@@ -160,7 +161,7 @@ namespace FoxScreen
                     {
                         Clipboard.SetText(cbtext + customname);
                     }
-                    catch { }
+                    catch { }*/
                 }));
             }
             catch (Exception e)
