@@ -13,13 +13,7 @@ namespace FoxScreen
 
         public frmMain main;
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        static extern bool GetCursorPos(ref Point lpPoint);
-
         private Bitmap screenBitmap;
-
-        private PullPoint top_left, bottom_right;
-        private PullPoint[] pullPoints = new PullPoint[4];
 
         public frmPickArea(frmMain mainFrm)
         {
@@ -36,24 +30,6 @@ namespace FoxScreen
 
             this.Location = rect.Location;
             this.Size = rect.Size;
-
-            pullPoints[0] = new PullPoint();
-            pullPoints[1] = new PullPoint();
-            pullPoints[2] = new PullPoint();
-            pullPoints[3] = new PullPoint();
-
-            pullPoints[0].addSyncPointX(pullPoints[2]);
-            pullPoints[1].addSyncPointX(pullPoints[3]);
-            pullPoints[0].addSyncPointY(pullPoints[1]);
-            pullPoints[2].addSyncPointY(pullPoints[3]);
-
-            top_left = pullPoints[0];
-            bottom_right = pullPoints[3];
-
-            top_left.X = 0;
-            top_left.Y = 0;
-            bottom_right.X = this.Width;
-            bottom_right.Y = this.Height;
         }
 
         ~frmPickArea()
@@ -104,10 +80,36 @@ namespace FoxScreen
         private Rectangle getSelectionRectangle()
         {
             Rectangle rect = new Rectangle();
-            rect.X = top_left.X;
-            rect.Y = top_left.Y;
-            rect.Width = bottom_right.X - top_left.X;
-            rect.Height = bottom_right.Y - top_left.Y;
+
+            int minX, maxX, minY, maxY;
+
+            if (startPoint.X <= endPoint.X)
+            {
+                minX = startPoint.X;
+                maxX = endPoint.X;
+            }
+            else
+            {
+                minX = endPoint.X;
+                maxX = startPoint.X;
+            }
+
+            if (startPoint.Y <= endPoint.Y)
+            {
+                minY = startPoint.Y;
+                maxY = endPoint.Y;
+            }
+            else
+            {
+                minY = endPoint.Y;
+                maxY = startPoint.Y;
+            }
+
+            rect.X = minX;
+            rect.Y = minY;
+            rect.Width = maxX - minX;
+            rect.Height = maxY - minY;
+
             return rect;
         }
 
@@ -124,134 +126,35 @@ namespace FoxScreen
             g.FillRectangle(alphaBrush, new Rectangle(0, 0, this.Width, this.Height));
         }
 
-        class PullPoint
-        {
-            int m_X;
-            public int X
-            {
-                get
-                {
-                    return m_X;
-                }
-                set
-                {
-                    m_X = value;
-                    foreach (PullPoint p in syncX)
-                    {
-                        if (p == this) continue;
-                        p.m_X = value;
-                    }
-                }
-            }
+        private Point startPoint;
+        private Point endPoint;
+        private bool isPulling = false;
 
-            int m_Y;
-            public int Y
-            {
-                get
-                {
-                    return m_Y;
-                }
-                set
-                {
-                    m_Y = value;
-                    foreach (PullPoint p in syncY)
-                    {
-                        if (p == this) continue;
-                        p.m_Y = value;
-                    }
-                }
-            }
-
-            public PullPoint() : this(0, 0)
-            {
-
-            }
-
-            public PullPoint(int X, int Y)
-            {
-                m_X = X;
-                m_Y = Y;
-            }
-
-            private List<PullPoint> syncX = new List<PullPoint>();
-            public void addSyncPointX(PullPoint other)
-            {
-                syncX.Add(other);
-                other.syncX.Add(this);
-            }
-            public void delSyncPointX(PullPoint other)
-            {
-                syncX.Remove(other);
-                other.syncX.Remove(this);
-            }
-
-            private List<PullPoint> syncY = new List<PullPoint>();
-            public void addSyncPointY(PullPoint other)
-            {
-                syncY.Add(other);
-                other.syncY.Add(this);
-            }
-            public void delSyncPointY(PullPoint other)
-            {
-                syncY.Remove(other);
-                other.syncY.Remove(this);
-            }
-
-            public int distanceSq(Point other)
-            {
-                int XD = other.X - this.m_X;
-                int YD = other.Y - this.m_Y;
-                return (XD * XD) + (YD * YD);
-            }
-
-            public int distanceSq(PullPoint other)
-            {
-                int XD = other.m_X - this.m_X;
-                int YD = other.m_Y - this.m_Y;
-                return (XD * XD) + (YD * YD);
-            }
-
-            public Point getPoint()
-            {
-                return new Point(X, Y);
-            }
-        }
-
-        private PullPoint currentPulling;
         private void frmPickArea_MouseDown(object sender, MouseEventArgs e)
         {
-            int minDist = int.MaxValue;
-            PullPoint decided = null;
-            Point pos = e.Location;
-            foreach(PullPoint p in pullPoints)
-            {
-                int dist = p.distanceSq(pos);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    decided = p;
-                }
-                else if (dist == minDist)
-                {
-                    decided = null;
-                }
-            }
-            currentPulling = decided;
+            startPoint = e.Location;
+            endPoint = new Point(e.Location.X, e.Location.Y);
+            isPulling = true;
         }
 
         private void frmPickArea_MouseMove(object sender, MouseEventArgs e)
         {
-            if (currentPulling == null) return;
+            if (!isPulling) return;
 
-            currentPulling.X = e.X;
-            currentPulling.Y = e.Y;
+            endPoint.X = e.X;
+            endPoint.Y = e.Y;
 
             this.Invalidate();
         }
 
         private void frmPickArea_MouseUp(object sender, MouseEventArgs e)
         {
-            currentPulling = null;
+            DoShot();
+        }
+
+        private void frmPickArea_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

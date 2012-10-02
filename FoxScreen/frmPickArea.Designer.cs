@@ -36,6 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(300, 300);
+            this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmPickArea";
@@ -45,6 +46,7 @@
             this.Text = "frmPickArea";
             this.TopMost = true;
             this.Deactivate += new System.EventHandler(this.CloseMeEvent);
+            this.Load += new System.EventHandler(this.frmPickArea_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmPickArea_Paint);
             this.Leave += new System.EventHandler(this.CloseMeEvent);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmPickArea_MouseDown);
