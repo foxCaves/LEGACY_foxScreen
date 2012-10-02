@@ -95,18 +95,19 @@ namespace FoxScreen
             }
             catch { }
 
+            uploadProgress.RemoveLastLabel();
+            uploadProgress.SetStatus(customname);
+            uploadProgress.SetProgress(0);
+            uploadProgress.SetBackColor(Color.Yellow);
+            uploadProgress.DoShow();
+
             try
             {
-                uploadProgress.RemoveLastLabel();
-                uploadProgress.SetStatus(customname);
-                uploadProgress.SetProgress(0);
-                uploadProgress.SetBackColor(Color.Yellow);
-                uploadProgress.DoShow();
-
                 NetworkCredential credentials = new NetworkCredential(Program.mainFrm.tbUser.Text, Program.mainFrm.tbPword.Text);
 
                 HttpWebRequest hwr = (HttpWebRequest)HttpWebRequest.Create(MAINURL + "create?" + customname);
                 hwr.Method = WebRequestMethods.Http.Put;
+                hwr.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 hwr.Credentials = credentials;
                 hwr.Proxy = null;
                 Stream str = hwr.GetRequestStream();
@@ -132,41 +133,29 @@ namespace FoxScreen
                 respreader.Close();
                 resp.Close();
 
-                uploadProgress.SetProgress(1);
-                uploadProgress.DoHide();
-                uploadProgress.SetBackColor(Color.Green);
-
                 Program.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
                     Clipboard.SetText(customname);
-                    /*string cbtext = "";
-                    try {
-                        cbtext = Clipboard.GetText();
-                        if (cbtext == null)
-                        {
-                            cbtext = "";
-                        }
-                    } catch { }
-
-                    if (!cbtext.StartsWith(MAINURL))
-                    {
-                        cbtext = "";
-                    }
-                    else
-                    {
-                        cbtext += "\r\n";
-                    }
-
-                    try
-                    {
-                        Clipboard.SetText(cbtext + customname);
-                    }
-                    catch { }*/
                 }));
+            }
+            catch (WebException e)
+            {
+                HttpWebResponse resp = (HttpWebResponse)e.Response;
+                StreamReader respreader = new StreamReader(resp.GetResponseStream());
+                string response = respreader.ReadToEnd();
+                respreader.Close();
+                resp.Close();
+                MessageBox.Show("Error uploading: " + response + " (" + ((int)resp.StatusCode) + ")", "foxScreen");
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString(), "ERROR!");
+                MessageBox.Show("Internal error: " + e.ToString(), "foxScreen");
+            }
+            finally
+            {
+                uploadProgress.SetProgress(1);
+                uploadProgress.DoHide();
+                uploadProgress.SetBackColor(Color.Green);
             }
         }
 
