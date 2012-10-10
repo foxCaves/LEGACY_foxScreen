@@ -103,13 +103,15 @@ namespace FoxScreen
 
             try
             {
-                NetworkCredential credentials = new NetworkCredential(Program.mainFrm.tbUser.Text, Program.mainFrm.tbPword.Text);
-
                 HttpWebRequest hwr = (HttpWebRequest)HttpWebRequest.Create(MAINURL + "create?" + customname);
                 hwr.Method = WebRequestMethods.Http.Put;
                 hwr.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                hwr.Credentials = credentials;
+                hwr.Headers.Add("X-Foxscreen-User", Program.mainFrm.tbUser.Text);
+                hwr.Headers.Add("X-Foxscreen-Password", Program.mainFrm.tbPword.Text);
                 hwr.Proxy = null;
+                hwr.AllowWriteStreamBuffering = false;
+                hwr.ServicePoint.Expect100Continue = false;
+                hwr.ContentLength = mstr.Length;
                 Stream str = hwr.GetRequestStream();
 
                 byte[] buffer = new byte[256];
@@ -121,6 +123,7 @@ namespace FoxScreen
                     readb = mstr.Read(buffer, 0, readb);
                     if (readb <= 0) break;
                     str.Write(buffer, 0, readb);
+                    str.Flush();
 
                     uploadProgress.SetProgress(((float)mstr.Position) / ((float)mstr.Length));
                 }
