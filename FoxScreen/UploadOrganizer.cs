@@ -140,9 +140,13 @@ namespace FoxScreen
                 {
                     Clipboard.SetText(customname);
                 }));
+
+                uploadProgress.SetBackColor(Color.Green);
             }
             catch (WebException e)
             {
+                uploadProgress.SetBackColor(Color.Red);
+
                 HttpWebResponse resp = (HttpWebResponse)e.Response;
                 StreamReader respreader = new StreamReader(resp.GetResponseStream());
                 string response = respreader.ReadToEnd();
@@ -158,7 +162,6 @@ namespace FoxScreen
             {
                 uploadProgress.SetProgress(1);
                 uploadProgress.DoHide();
-                uploadProgress.SetBackColor(Color.Green);
             }
         }
 
