@@ -59,16 +59,20 @@ namespace FoxScreen
 
         public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap)
         {
-            MakeScreenShotFromBitmap(customname, bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
-        }
-
-        public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap, Rectangle rect)
-        {
             MemoryStream mstr = new MemoryStream();
 
             bitmap.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
 
             uploadOrganizer.AddUpload(customname + ".png", mstr);
+        }
+
+        public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap, Rectangle rect)
+        {
+            Bitmap b = new Bitmap(rect.Width, rect.Height);
+            Graphics g = Graphics.FromImage(b);
+            g.DrawImage(bitmap, 0, 0, rect, GraphicsUnit.Pixel);
+            g.Flush();
+            MakeScreenShotFromBitmap(customname, b);
         }
 
         public void AreaScreenShot(Rectangle rect)
@@ -83,7 +87,6 @@ namespace FoxScreen
 
         public void AreaScreenShot(int x, int y, Size size, string customname)
         {
-            Bitmap b = MakeBitmapFromScreen(x, y, size);
             MakeScreenShotFromBitmap(customname, MakeBitmapFromScreen(x, y, size));
         }
 

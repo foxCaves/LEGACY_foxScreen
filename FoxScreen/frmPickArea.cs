@@ -73,11 +73,11 @@ namespace FoxScreen
 
         private void DoShot()
         {
-            main.screenshotManager.MakeScreenShotFromBitmap("Area", screenBitmap, getSelectionRectangle());
+            main.screenshotManager.MakeScreenShotFromBitmap("Area", screenBitmap, GetSelectionRectangle());
             this.Close();
         }
 
-        private Rectangle getSelectionRectangle()
+        private Rectangle GetSelectionRectangle()
         {
             Rectangle rect = new Rectangle();
 
@@ -119,7 +119,7 @@ namespace FoxScreen
             Graphics g = e.Graphics;
             g.DrawImageUnscaled(screenBitmap, 0, 0);
 
-            Rectangle selection = getSelectionRectangle();
+            Rectangle selection = GetSelectionRectangle();
             g.DrawRectangle(Pens.Red, selection);
             
             g.SetClip(new Region(selection), System.Drawing.Drawing2D.CombineMode.Exclude);
