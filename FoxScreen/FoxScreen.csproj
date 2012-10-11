@@ -130,7 +130,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Release\watermark.png" />
     <Content Include="foxscreen.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +154,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>"C:\Program Files (x86)\Eazfuscator.NET\Eazfuscator.NET.exe" "$(TargetDir)$(TargetFileName)" 

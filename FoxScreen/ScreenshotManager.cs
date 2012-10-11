@@ -64,25 +64,9 @@ namespace FoxScreen
 
         public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap, Rectangle rect)
         {
-            //Image watermark = Image.FromFile("watermark.png");
-
-            Bitmap b = new Bitmap(rect.Width, rect.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(b);
-
-            g.Clear(Color.White);
-            g.DrawImage(bitmap, new Rectangle(0, 0, rect.Width, rect.Height), rect, GraphicsUnit.Pixel);
-
-            /*int imgHeight = 64;
-            int imgWidth = (int)(((float)watermark.Width / (float)watermark.Height) * (float)imgHeight);
-
-            g.DrawImage(watermark, (b.Width - imgWidth) - 5, (b.Height - imgHeight) - 5, imgWidth, imgHeight);*/
-
-            g.Flush();
-
             MemoryStream mstr = new MemoryStream();
-            b.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
 
-            g.Dispose();
+            bitmap.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
 
             uploadOrganizer.AddUpload(customname + ".png", mstr);
         }
