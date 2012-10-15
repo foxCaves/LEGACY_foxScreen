@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("foxScreen")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Doridian")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("foxScreen")]
 [assembly: AssemblyCopyright("Copyright © Doridian 2012")]
 [assembly: AssemblyTrademark("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a35807e6-802f-4484-814a-a607e0bf5883")]
+[assembly: Guid("4bd5083e-47e4-4001-a296-b1df58402655")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,11 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.3.3.7")]
+[assembly: AssemblyFileVersion("1.3.3.7")]
 
 [assembly: Obfuscation(Feature = "Apply to type *: apply to member *: renaming", Exclude = true)]
 [assembly: Obfuscation(Feature = "Apply to type *: renaming", Exclude = true)]
-
-[assembly: Obfuscation(Feature = "embed MouseKeyboardActivityMonitor.dll", Exclude = false)]
-[assembly: Obfuscation(Feature = "embed SlimDX.dll", Exclude = false)]

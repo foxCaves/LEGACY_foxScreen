@@ -22,17 +22,5 @@ namespace FoxScreen.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("rawr")]
-        public string penis {
-            get {
-                return ((string)(this["penis"]));
-            }
-            set {
-                this["penis"] = value;
-            }
-        }
     }
 }

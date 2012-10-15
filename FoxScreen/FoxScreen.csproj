@@ -1,35 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{367400F1-5A6A-4D15-8C55-381324BB24E2}</ProjectGuid>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{60C1E69E-9F67-45FF-AD18-BB6BEFB039FB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FoxScreen</RootNamespace>
     <AssemblyName>foxScreen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -39,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -49,68 +33,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>foxscreen.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
     <StartupObject>FoxScreen.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>foxscreen.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MouseKeyboardActivityMonitor">
-      <HintPath>..\MouseKeyboardActivityMonitor.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SlimDX.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmDropArea.cs">
+    <Compile Include="FormSelfUpdater.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmDropArea.Designer.cs">
-      <DependentUpon>frmDropArea.cs</DependentUpon>
+    <Compile Include="FormSelfUpdater.designer.cs">
+      <DependentUpon>FormSelfUpdater.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmMain.Designer.cs">
-      <DependentUpon>frmMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmPickArea.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmPickArea.Designer.cs">
-      <DependentUpon>frmPickArea.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmProgress.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmProgress.Designer.cs">
-      <DependentUpon>frmProgress.cs</DependentUpon>
-    </Compile>
-    <Compile Include="KeyboardHook.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScreenshotManager.cs" />
-    <Compile Include="UploadOrganizer.cs" />
-    <EmbeddedResource Include="frmDropArea.resx">
-      <DependentUpon>frmDropArea.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resx">
-      <DependentUpon>frmMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmPickArea.resx">
-      <DependentUpon>frmPickArea.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmProgress.resx">
-      <DependentUpon>frmProgress.cs</DependentUpon>
+    <Compile Include="util\DownloaderHash.cs" />
+    <Compile Include="util\HTTP.cs" />
+    <EmbeddedResource Include="FormSelfUpdater.resx">
+      <DependentUpon>FormSelfUpdater.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -133,36 +85,26 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="foxscreen.ico" />
-    <Content Include="SlimDX.dll" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 4.5</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <Content Include="foxscreen.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\FoxScreenMain\FoxScreenMain.csproj">
+      <Project>{367400f1-5a6a-4d15-8c55-381324bb24e2}</Project>
+      <Name>FoxScreenMain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
+<<<<<<< HEAD
     <PostBuildEvent>"C:\Program Files (x86)\Eazfuscator.NET\Eazfuscator.NET.exe" "$(TargetDir)$(TargetFileName)" 
 "C:\Program Files (x86)\Windows Kits\8.0\bin\x64\signtool.exe" sign /f "$(SolutionDir)oscs.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p * "$(TargetDir)$(TargetFileName)"</PostBuildEvent>
+=======
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" "C:\Program Files (x86)\Eazfuscator.NET\Eazfuscator.NET.exe" "$(TargetDir)$(TargetFileName)" 
+if "$(ConfigurationName)" == "Release" "C:\Program Files (x86)\Windows Kits\8.0\bin\x64\signtool.exe" sign /f "$(SolutionDir)oscs.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p * "$(TargetDir)$(TargetFileName)"</PostBuildEvent>
+>>>>>>> e045cfc... Fixed project setup. Also obf + sign only run on Release config now
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
