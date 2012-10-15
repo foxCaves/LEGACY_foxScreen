@@ -35,6 +35,7 @@ namespace FoxScreen
         ~frmPickArea()
         {
             this.Close();
+            this.Dispose(false);
         }
 
         private void CloseMeEvent(object sender, EventArgs e)

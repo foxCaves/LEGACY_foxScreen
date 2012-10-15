@@ -50,8 +50,8 @@ namespace FoxScreen
             }
             else if (e.Modifier == ModifierKeysH.Alt)
             {
-                Rectangle rect = screenshotManager.GetCurWndRect();
-                screenshotManager.AreaScreenShot(rect, ScreenshotManager.GetWindowTitle(ScreenshotManager.GetForegroundWindow()));
+                Rectangle rect = ScreenshotManager.NativeMethods.GetActiveWindowAbsoluteClientRect();
+                screenshotManager.AreaScreenShot(rect, ScreenshotManager.NativeMethods.GetActiveWindowTitle());
             }
             else
             {

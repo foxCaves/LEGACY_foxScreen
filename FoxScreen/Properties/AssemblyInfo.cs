@@ -35,4 +35,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
+[assembly: Obfuscation(Feature = "Apply to type *: apply to member *: renaming", Exclude = true)]
+[assembly: Obfuscation(Feature = "Apply to type *: renaming", Exclude = true)]
+
 [assembly: Obfuscation(Feature = "embed MouseKeyboardActivityMonitor.dll", Exclude = false)]
+[assembly: Obfuscation(Feature = "embed SlimDX.dll", Exclude = false)]

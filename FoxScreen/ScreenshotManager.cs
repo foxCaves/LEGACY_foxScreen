@@ -6,15 +6,37 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using SlimDX.Direct3D9;
+using SlimDX;
 
 namespace FoxScreen
 {
     public class ScreenshotManager
     {
+        private Device[] dxdevices;
+        private Point[] dxdevice_offsets;
+        private Size[] dxdevice_sizes;
+
         private UploadOrganizer uploadOrganizer;
+
         public ScreenshotManager(UploadOrganizer m_uploadOrganizer)
         {
             uploadOrganizer = m_uploadOrganizer;
+
+            Direct3D d3d = new Direct3D();
+            PresentParameters present_params = new PresentParameters();
+            present_params.Windowed = true;
+            present_params.SwapEffect = SwapEffect.Discard;
+
+            dxdevice_offsets = new Point[Screen.AllScreens.Length];
+            dxdevice_sizes = new Size[Screen.AllScreens.Length];
+            dxdevices = new Device[Screen.AllScreens.Length];
+            for (int i = 0; i < Screen.AllScreens.Length; i++)
+            {
+                dxdevices[i] = new Device(d3d, i, DeviceType.Hardware, IntPtr.Zero, CreateFlags.SoftwareVertexProcessing, present_params);
+                dxdevice_offsets[i] = Screen.AllScreens[i].Bounds.Location;
+                dxdevice_sizes[i] = Screen.AllScreens[i].Bounds.Size;
+            }
         }
 
         public Rectangle GetCompleteScreen()
@@ -36,14 +58,6 @@ namespace FoxScreen
             return new Rectangle(mx, my, x - mx, y - my);
         }
 
-        public Rectangle GetCurWndRect()
-        {
-            IntPtr ahWnd = GetForegroundWindow();
-            RECT rect;
-            GetWindowRect(ahWnd, out rect);
-            return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-        }
-
         public void AreaScreenShot(int x, int y, int width, int height)
         {
             AreaScreenShot(x, y, width, height, "Screenshot");
@@ -60,9 +74,7 @@ namespace FoxScreen
         public void MakeScreenShotFromBitmap(string customname, Bitmap bitmap)
         {
             MemoryStream mstr = new MemoryStream();
-
             bitmap.Save(mstr, System.Drawing.Imaging.ImageFormat.Png);
-
             uploadOrganizer.AddUpload(customname + ".png", mstr);
         }
 
@@ -90,38 +102,82 @@ namespace FoxScreen
             MakeScreenShotFromBitmap(customname, MakeBitmapFromScreen(x, y, size));
         }
 
+        internal class NativeMethods
+        {
+            private struct RECT
+            {
+                public int Left;
+                public int Top;
+                public int Right;
+                public int Bottom;
+            }
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+            private static extern IntPtr GetForegroundWindow();
+
+            [DllImport("user32.dll")]
+            private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+            [DllImport("user32.dll")]
+            private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            private static extern uint SendMessage(IntPtr handleWindow, uint message, uint wParam, StringBuilder lParam);
+
+            public static string GetActiveWindowTitle()
+            {
+                return GetWindowTitle(GetForegroundWindow());
+            }
+
+            public static Rectangle GetActiveWindowAbsoluteClientRect()
+            {
+                return GetAbsoluteClientRect(GetForegroundWindow());
+            }
+
+            public static string GetWindowTitle(IntPtr handleWindow)
+            {
+                StringBuilder sb = new StringBuilder(256);
+                SendMessage(handleWindow, 0x000D /*WM_GETTEXT*/, 256, sb);
+                return sb.ToString();
+            }
+
+            public static Rectangle GetAbsoluteClientRect(IntPtr hWnd)
+            {
+                RECT windowRect;
+                //RECT clientRect;
+
+                GetWindowRect(hWnd, out windowRect);
+                //GetClientRect(hWnd, out clientRect);
+
+                Size windowRectSize = new Size(windowRect.Right - windowRect.Left, windowRect.Bottom - windowRect.Top);
+                //Size clientRectSize = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top);
+
+                return new Rectangle(new Point(windowRect.Left, windowRect.Top), windowRectSize);
+
+                // This gives us the width of the left, right and bottom chrome - we can then determine the top height
+                //int chromeWidth = (int)((windowRectSize.Width - clientRectSize.Width) / 2);
+
+                //return new Rectangle(new Point(windowRect.Left + chromeWidth, windowRect.Top + (windowRectSize.Height - clientRectSize.Height - chromeWidth)), clientRectSize);
+            }
+        }
+
         public Bitmap MakeBitmapFromScreen(int x, int y, Size size)
         {
             Bitmap b = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
-            g.Clear(Color.White);
-            g.CopyFromScreen(x, y, 0, 0, size);
+
+            for (int i = 0; i < dxdevices.Length; i++)
+            {
+                Surface surface = Surface.CreateOffscreenPlain(dxdevices[i], dxdevice_sizes[i].Width, dxdevice_sizes[i].Height, Format.A8R8G8B8, Pool.Scratch);
+                dxdevices[i].GetFrontBufferData(0, surface);
+                Bitmap bmp = new Bitmap(Surface.ToStream(surface, ImageFileFormat.Bmp));
+                g.DrawImage(bmp, new Rectangle(dxdevice_offsets[i].X, dxdevice_offsets[i].Y, size.Width, size.Height), x, y, size.Width, size.Height, GraphicsUnit.Pixel);
+                bmp.Dispose();
+                surface.Dispose();
+            }
+
             g.Flush();
             return b;
-        }
-
-        private struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        public static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern uint SendMessage(IntPtr handleWindow, uint message, uint wParam, StringBuilder lParam);
-
-        public static string GetWindowTitle(IntPtr handleWindow)
-        {
-            StringBuilder sb = new StringBuilder(256);
-            SendMessage(handleWindow, 0x000D /*WM_GETTEXT*/, 256, sb);
-            return sb.ToString();
         }
     }
 }
