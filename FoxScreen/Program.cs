@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,6 +20,44 @@ namespace FoxScreen
         /// </summary>
         [STAThread]
         static void Main()
+        {
+            string mutexId = "Global\\foxScreenMutex";
+
+            using (var mutex = new Mutex(false, mutexId))
+            {
+                var allowEveryoneRule = new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow);
+                var securitySettings = new MutexSecurity();
+                securitySettings.AddAccessRule(allowEveryoneRule);
+                mutex.SetAccessControl(securitySettings);
+
+                var hasHandle = false;
+                try
+                {
+                    try
+                    {
+                        hasHandle = mutex.WaitOne(1000, false);
+                        if (hasHandle == false)
+                        {
+                            MessageBox.Show("foxScreen is already running!", "foxScreen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }   
+                    }
+                    catch (AbandonedMutexException)
+                    {
+                        hasHandle = true;
+                    }
+
+                    ActualMain();
+                }
+                finally
+                {
+                    if (hasHandle)
+                        mutex.ReleaseMutex();
+                }
+            }
+        }
+
+        private static void ActualMain()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
