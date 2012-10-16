@@ -58,7 +58,7 @@ namespace FoxScreen
             for (int i = 0; i < imax; i++)
             {
                 c = cna[i];
-                if (c == '<' || c == '>')
+                if (c == '<' || c == '>' || c == '\n' || c == '\t' || c == '\r' || c == '\0')
                 {
                     cna[i] = '_';
                 }
