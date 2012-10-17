@@ -14,7 +14,7 @@ namespace FoxScreen
 {
     public partial class FormSelfUpdater : Form
     {
-        private static readonly string UPDATEURL_BASE = "https://d3rith5u07eivj.cloudfront.net/static/dls/";
+        private static readonly string UPDATEURL_BASE = "https://foxcav.es/static/dls/";
 
         public FormSelfUpdater()
         {

@@ -7,18 +7,14 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using FoxCavesAPI;
 
 namespace FoxScreen
 {
-    public class UploadOrganizer
+    public class UploadOrganizer : IDisposable
     {
-        frmProgress uploadProgress;
-        Thread uploadThread;
-        Thread uploadCheckerThread;
-
-        Queue<UploadThreadInfo> uploads = new Queue<UploadThreadInfo>();
-
-        public const string MAINURL = "https://foxcav.es/";
+        readonly Uploader uploader;
+        readonly frmProgress uploadProgress;
 
         public UploadOrganizer()
         {
@@ -26,164 +22,64 @@ namespace FoxScreen
             uploadProgress.Show();
             uploadProgress.Hide();
 
-            uploadCheckerThread = new Thread(new ThreadStart(UploadCheckerThread));
-            uploadCheckerThread.Start();
+            uploader = new Uploader();
+
+            uploader.UploadStarted += uploader_UploadStarted;
+            uploader.UploadFinished += uploader_UploadFinished;
+            uploader.UploadProgress += uploader_UploadProgress;
         }
 
-        ~UploadOrganizer()
+        public void Dispose()
         {
-            this.Stop();
+            uploader.Dispose();
         }
 
-        public void Stop()
+        public void SetCredentials(string username, string password)
         {
-            try
-            {
-                uploadCheckerThread.Abort();
-            }
-            catch { }
-
-            try
-            {
-                uploadThread.Abort();
-            }
-            catch { }
+            uploader.SetCredentials(username, password);
         }
 
-        public void AddUpload(string customname, MemoryStream mstr)
+        public void AddUpload(string filename, MemoryStream mstr)
         {
-            int imax = customname.Length;
-            char c;
-            char[] cna = customname.ToCharArray(0, imax);
-            for (int i = 0; i < imax; i++)
-            {
-                c = cna[i];
-                if (c == '<' || c == '>' || c == '\n' || c == '\t' || c == '\r' || c == '\0')
-                {
-                    cna[i] = '_';
-                }
-            }
-            customname = new String(cna);
-            uploads.Enqueue(new UploadThreadInfo(customname, mstr, uploadProgress));
+            Uploader.UploadInfo uploadInfo = uploader.QueueAsync(filename, mstr);
+            uploadProgress.AddLabel(uploadInfo.filename);
         }
 
-        private void UploadCheckerThread()
+        void uploader_UploadProgress(Uploader.UploadInfo uploadInfo, double progress)
         {
-            while (true)
-            {
-                do {
-                    Thread.Sleep(100);
-                } while(uploadThread != null && uploadThread.IsAlive);
-
-                if (uploads.Count > 0)
-                {
-                    uploadThread = new Thread(new ParameterizedThreadStart(UploadThread));
-                    uploadThread.Start(uploads.Dequeue());
-                }
-            }
+            uploadProgress.SetProgress((float)progress);
         }
 
-        private void UploadThread(object obj)
+        void uploader_UploadStarted(Uploader.UploadInfo uploadInfo)
         {
-            UploadThreadInfo info = (UploadThreadInfo)obj;
-            string customname = info.customname;
-            MemoryStream mstr = info.mstr;
-
-            try
-            {
-                mstr.Seek(0, SeekOrigin.Begin);
-            }
-            catch { }
-
             uploadProgress.RemoveLastLabel();
-            uploadProgress.SetStatus(customname);
+            uploadProgress.SetStatus(uploadInfo.filename);
             uploadProgress.SetProgress(0);
             uploadProgress.SetBackColor(Color.Yellow);
             uploadProgress.DoShow();
+        }
 
-            try
+        void uploader_UploadFinished(Uploader.UploadInfo uploadInfo, bool success, string error_or_link)
+        {
+            uploadProgress.SetProgress(1);
+
+            if (success)
             {
-                HttpWebRequest hwr = (HttpWebRequest)HttpWebRequest.Create(MAINURL + "create?" + customname);
-                hwr.Method = WebRequestMethods.Http.Put;
-                hwr.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
-                hwr.Headers.Add("X-Foxscreen-User", Main.mainFrm.tbUser.Text);
-                hwr.Headers.Add("X-Foxscreen-Password", Main.mainFrm.tbPword.Text);
-                hwr.Proxy = null;
-                hwr.AllowWriteStreamBuffering = false;
-                hwr.ServicePoint.Expect100Continue = false;
-                hwr.ContentLength = mstr.Length;
-                Stream str = hwr.GetRequestStream();
-
-                byte[] buffer = new byte[256];
-                int readb;
-                while (mstr.CanRead)
-                {
-                    readb = (int)(mstr.Length - mstr.Position);
-                    if (readb > 256) readb = 256;
-                    readb = mstr.Read(buffer, 0, readb);
-                    if (readb <= 0) break;
-                    str.Write(buffer, 0, readb);
-                    str.Flush();
-
-                    uploadProgress.SetProgress(((float)mstr.Position) / ((float)mstr.Length));
-                }
-                str.Close();
-                mstr.Close();
-
-                HttpWebResponse resp = (HttpWebResponse)hwr.GetResponse();
-                StreamReader respreader = new StreamReader(resp.GetResponseStream());
-                customname = MAINURL + respreader.ReadToEnd();
-                respreader.Close();
-                resp.Close();
-
                 Main.mainFrm.Invoke(new MethodInvoker(delegate()
                 {
-                    Clipboard.SetText(customname);
+                    Clipboard.SetText(error_or_link);
                 }));
 
                 uploadProgress.SetBackColor(Color.Green);
             }
-            catch (WebException e)
+            else
             {
+                MessageBox.Show(error_or_link, "foxScreen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 uploadProgress.SetBackColor(Color.Red);
-
-                HttpWebResponse resp = (HttpWebResponse)e.Response;
-                StreamReader respreader = new StreamReader(resp.GetResponseStream());
-                string response = respreader.ReadToEnd();
-                respreader.Close();
-                resp.Close();
-                MessageBox.Show("Error uploading: " + response + " (" + ((int)resp.StatusCode) + ")", "foxScreen");
             }
-            catch (Exception e)
-            {
-                MessageBox.Show("Internal error: " + e.ToString(), "foxScreen");
-            }
-            finally
-            {
-                uploadProgress.SetProgress(1);
-                uploadProgress.DoHide();
-            }
-        }
 
-        private static string FixTwoChar(int num)
-        {
-            if (num < 10) return "0" + num.ToString();
-            return num.ToString();
-        }
-
-        internal class UploadThreadInfo
-        {
-            public readonly string customname;
-            public readonly MemoryStream mstr;
-
-            public UploadThreadInfo(string customname, MemoryStream mstr, frmProgress uploadProgress)
-            {
-                this.customname = customname;
-
-                uploadProgress.AddLabel(this.customname);
-                
-                this.mstr = mstr;
-            }
+            uploadProgress.DoHide();
         }
     }
 }

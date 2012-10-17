@@ -40,3 +40,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Obfuscation(Feature = "embed MouseKeyboardActivityMonitor.dll", Exclude = false)]
 [assembly: Obfuscation(Feature = "embed SlimDX.dll", Exclude = false)]
+[assembly: Obfuscation(Feature = "embed foxCavesAPI.dll", Exclude = false)]

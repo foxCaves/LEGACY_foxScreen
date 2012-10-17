@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
 
 namespace FoxScreen
 {
@@ -40,6 +41,8 @@ namespace FoxScreen
                 tbPword.Text = lines[1];
             }
             catch { }
+
+            uploadOrganizer.SetCredentials(tbUser.Text, tbPword.Text);
         }
 
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
@@ -70,12 +73,13 @@ namespace FoxScreen
         private void btnFullshot_Click(object sender, EventArgs e)
         {
             Rectangle rect = screenshotManager.GetCompleteScreen();
-            screenshotManager.AreaScreenShot(rect); ;
+            screenshotManager.AreaScreenShot(rect);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             File.WriteAllText("config.cfg", tbUser.Text + Environment.NewLine + tbPword.Text);
+            uploadOrganizer.SetCredentials(tbUser.Text, tbPword.Text);
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -95,7 +99,7 @@ namespace FoxScreen
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            uploadOrganizer.Stop();
+            uploadOrganizer.Dispose();
             Application.Exit();
         }
 

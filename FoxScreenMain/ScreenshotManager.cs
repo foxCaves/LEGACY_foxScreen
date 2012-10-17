@@ -22,7 +22,11 @@ namespace FoxScreen
         public ScreenshotManager(UploadOrganizer m_uploadOrganizer)
         {
             uploadOrganizer = m_uploadOrganizer;
+            ResolutionChanged();
+        }
 
+        public void ResolutionChanged()
+        {
             Direct3D d3d = new Direct3D();
             PresentParameters present_params = new PresentParameters();
             present_params.Windowed = true;
@@ -31,6 +35,7 @@ namespace FoxScreen
             dxdevice_offsets = new Point[Screen.AllScreens.Length];
             dxdevice_sizes = new Size[Screen.AllScreens.Length];
             dxdevices = new Device[Screen.AllScreens.Length];
+
             for (int i = 0; i < Screen.AllScreens.Length; i++)
             {
                 dxdevices[i] = new Device(d3d, i, DeviceType.Hardware, IntPtr.Zero, CreateFlags.SoftwareVertexProcessing, present_params);
@@ -166,12 +171,14 @@ namespace FoxScreen
             Bitmap b = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Graphics g = Graphics.FromImage(b);
 
+            Rectangle completeScreen = GetCompleteScreen();
+
             for (int i = 0; i < dxdevices.Length; i++)
             {
                 Surface surface = Surface.CreateOffscreenPlain(dxdevices[i], dxdevice_sizes[i].Width, dxdevice_sizes[i].Height, Format.A8R8G8B8, Pool.Scratch);
                 dxdevices[i].GetFrontBufferData(0, surface);
                 Bitmap bmp = new Bitmap(Surface.ToStream(surface, ImageFileFormat.Bmp));
-                g.DrawImage(bmp, new Rectangle(dxdevice_offsets[i].X, dxdevice_offsets[i].Y, size.Width, size.Height), x, y, size.Width, size.Height, GraphicsUnit.Pixel);
+                g.DrawImage(bmp, new Rectangle(dxdevice_offsets[i].X - x, dxdevice_offsets[i].Y - y, size.Width, size.Height), 0, 0, size.Width, size.Height, GraphicsUnit.Pixel);
                 bmp.Dispose();
                 surface.Dispose();
             }
