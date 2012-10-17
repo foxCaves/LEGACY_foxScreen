@@ -53,7 +53,9 @@ namespace FoxScreen
             }
             else if (e.Modifier == ModifierKeysH.Alt)
             {
+                Rectangle completeRect = screenshotManager.GetCompleteScreen();
                 Rectangle rect = ScreenshotManager.NativeMethods.GetActiveWindowAbsoluteClientRect();
+                rect.Offset(-completeRect.X, -completeRect.Y);
                 screenshotManager.AreaScreenShot(rect, ScreenshotManager.NativeMethods.GetActiveWindowTitle());
             }
             else

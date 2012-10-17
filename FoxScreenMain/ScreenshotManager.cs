@@ -97,14 +97,14 @@ namespace FoxScreen
             AreaScreenShot(rect.X, rect.Y, rect.Size, "Screenshot");
         }
 
-        public void AreaScreenShot(Rectangle rect, string customname)
-        {
-            AreaScreenShot(rect.X, rect.Y, rect.Size, customname);
-        }
-
         public void AreaScreenShot(int x, int y, Size size, string customname)
         {
-            MakeScreenShotFromBitmap(customname, MakeBitmapFromScreen(x, y, size));
+            AreaScreenShot(new Rectangle(x, y, size.Width, size.Height), customname);
+        }
+
+        public void AreaScreenShot(Rectangle rect, string customname)
+        {
+            MakeScreenShotFromBitmap(customname, MakeBitmapFromScreen(), rect);
         }
 
         internal class NativeMethods
@@ -166,19 +166,19 @@ namespace FoxScreen
             }
         }
 
-        public Bitmap MakeBitmapFromScreen(int x, int y, Size size)
+        public Bitmap MakeBitmapFromScreen()
         {
-            Bitmap b = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(b);
-
             Rectangle completeScreen = GetCompleteScreen();
+
+            Bitmap b = new Bitmap(completeScreen.Width, completeScreen.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(b);
 
             for (int i = 0; i < dxdevices.Length; i++)
             {
                 Surface surface = Surface.CreateOffscreenPlain(dxdevices[i], dxdevice_sizes[i].Width, dxdevice_sizes[i].Height, Format.A8R8G8B8, Pool.Scratch);
                 dxdevices[i].GetFrontBufferData(0, surface);
                 Bitmap bmp = new Bitmap(Surface.ToStream(surface, ImageFileFormat.Bmp));
-                g.DrawImage(bmp, new Rectangle(dxdevice_offsets[i].X - x, dxdevice_offsets[i].Y - y, size.Width, size.Height), 0, 0, size.Width, size.Height, GraphicsUnit.Pixel);
+                g.DrawImage(bmp, new Rectangle(dxdevice_offsets[i].X - completeScreen.X, dxdevice_offsets[i].Y - completeScreen.Y, completeScreen.Width, completeScreen.Height), 0, 0, completeScreen.Width, completeScreen.Height, GraphicsUnit.Pixel);
                 bmp.Dispose();
                 surface.Dispose();
             }

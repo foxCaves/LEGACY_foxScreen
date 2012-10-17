@@ -26,7 +26,8 @@ namespace FoxScreen
             keyboardHookManager.KeyDown += HookManager_KeyDown; 
 
             Rectangle rect = main.screenshotManager.GetCompleteScreen();
-            screenBitmap = main.screenshotManager.MakeBitmapFromScreen(rect.X, rect.Y, rect.Size);
+
+            screenBitmap = main.screenshotManager.MakeBitmapFromScreen();
 
             this.Location = rect.Location;
             this.Size = rect.Size;
