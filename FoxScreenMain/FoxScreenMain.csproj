@@ -58,13 +58,16 @@
   <ItemGroup>
     <Reference Include="foxCavesAPI">
       <HintPath>..\..\foxCavesAPI\foxCavesAPI\bin\Release\foxCavesAPI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MouseKeyboardActivityMonitor">
       <HintPath>..\MouseKeyboardActivityMonitor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SlimDX.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
