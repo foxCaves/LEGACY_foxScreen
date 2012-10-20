@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SlimDX.Direct3D9;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using SlimDX.Direct3D9;
-using SlimDX;
+using System.Text;
+using System.Windows.Forms;
 
 namespace FoxScreen
 {

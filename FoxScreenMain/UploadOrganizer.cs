@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Windows.Forms;
+﻿using FoxCavesAPI;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Threading;
-using FoxCavesAPI;
 using System.IO.Pipes;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace FoxScreen
 {
@@ -63,6 +59,16 @@ namespace FoxScreen
         {
             uploader.Dispose();
             isRunning = false;
+            try
+            {
+                pipeServer.Close();
+            }
+            catch { }
+            try
+            {
+                pipeServer.Dispose();
+            }
+            catch { }
             try
             {
                 pipeReaderThread.Abort();

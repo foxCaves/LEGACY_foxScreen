@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
@@ -114,6 +113,8 @@ namespace FoxScreen
                 mutex.ReleaseMutex();
 
             Application.Exit();
+
+            Process.GetCurrentProcess().Kill();
         }
 
         public static void SetCredentials(string username, string password)
