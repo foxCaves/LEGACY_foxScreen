@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Security.Principal;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FoxScreen
@@ -19,45 +13,18 @@ namespace FoxScreen
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            string mutexId = "Global\\foxScreenMutex";
-
-            using (var mutex = new Mutex(false, mutexId))
+            if (args.Length != 0)
             {
-                var allowEveryoneRule = new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), MutexRights.FullControl, AccessControlType.Allow);
-                var securitySettings = new MutexSecurity();
-                securitySettings.AddAccessRule(allowEveryoneRule);
-                mutex.SetAccessControl(securitySettings);
-
-                var hasHandle = false;
-                try
-                {
-                    try
-                    {
-                        hasHandle = mutex.WaitOne(1000, false);
-                        if (hasHandle == false)
-                        {
-                            MessageBox.Show("foxScreen is already running!", "foxScreen", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }   
-                    }
-                    catch (AbandonedMutexException)
-                    {
-                        hasHandle = true;
-                    }
-
-                    ActualMain();
-                }
-                finally
-                {
-                    if (hasHandle)
-                        mutex.ReleaseMutex();
-                }
+                ActualMain(args[0]);
+                return;
             }
+
+            ActualMain(null);
         }
 
-        private static void ActualMain()
+        private static void ActualMain(string directupload)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -67,7 +34,10 @@ namespace FoxScreen
             string launchDir = Environment.CurrentDirectory;
 
             Environment.CurrentDirectory = GetAppDir();
-            SelfUpdate();
+            if (directupload == null)
+            {
+                SelfUpdate();
+            }
 
             byte[] assembly;
             if (Debugger.IsAttached)
@@ -81,8 +51,17 @@ namespace FoxScreen
 
             Assembly launcher = Assembly.Load(assembly);
             Type mainClass = launcher.GetType("FoxScreen.Main");
-            MethodInfo method = mainClass.GetMethod("Launch", BindingFlags.Static | BindingFlags.Public);
-            method.Invoke(null, new object[] { });
+
+            if (directupload == null)
+            {
+                MethodInfo method = mainClass.GetMethod("Launch", BindingFlags.Static | BindingFlags.Public);
+                method.Invoke(null, new object[] { });
+            }
+            else
+            {
+                MethodInfo method = mainClass.GetMethod("LaunchWithUpload", BindingFlags.Static | BindingFlags.Public);
+                method.Invoke(null, new string[] { directupload });
+            }
         }
 
         public static void SelfUpdate()

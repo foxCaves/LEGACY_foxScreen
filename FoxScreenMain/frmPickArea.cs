@@ -25,9 +25,9 @@ namespace FoxScreen
             keyboardHookManager.Enabled = true;
             keyboardHookManager.KeyDown += HookManager_KeyDown; 
 
-            Rectangle rect = main.screenshotManager.GetCompleteScreen();
+            Rectangle rect = Main.screenshotManager.GetCompleteScreen();
 
-            screenBitmap = main.screenshotManager.MakeBitmapFromScreen();
+            screenBitmap = Main.screenshotManager.MakeBitmapFromScreen();
 
             this.Location = rect.Location;
             this.Size = rect.Size;
@@ -75,7 +75,7 @@ namespace FoxScreen
 
         private void DoShot()
         {
-            main.screenshotManager.MakeScreenShotFromBitmap("Area", screenBitmap, GetSelectionRectangle());
+            Main.screenshotManager.MakeScreenShotFromBitmap("Area", screenBitmap, GetSelectionRectangle());
             this.Close();
         }
 

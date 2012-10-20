@@ -47,16 +47,10 @@ namespace FoxScreen
             {
                 foreach (string file in files)
                 {
-                    if ((!File.Exists(file)) || Directory.Exists(file)) continue;
-
-                    int fPathPos = file.LastIndexOf('/');
-                    int fPathPos2 = file.LastIndexOf('\\');
-                    if(fPathPos2 > fPathPos) fPathPos = fPathPos2;
-                    string filename = file.Substring(fPathPos + 1);
-
-                    MemoryStream mstr = new MemoryStream(File.ReadAllBytes(file));
-                    uploadOrganizer.AddUpload(filename, mstr);
+                    uploadOrganizer.AddFileUpload(file);
                 }
+
+                return;
             }
 
             string text = e.Data.GetData(DataFormats.Text) as string;

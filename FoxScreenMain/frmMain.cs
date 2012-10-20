@@ -16,13 +16,9 @@ namespace FoxScreen
         frmDropArea dropForm;
 
         KeyboardHook kbHook = new KeyboardHook();
-        public readonly UploadOrganizer uploadOrganizer = new UploadOrganizer();
-        public readonly ScreenshotManager screenshotManager;
 
         public frmMain()
         {
-            screenshotManager = new ScreenshotManager(uploadOrganizer);
-
             InitializeComponent();
 
             kbHook.KeyPressed += new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
@@ -30,19 +26,13 @@ namespace FoxScreen
             kbHook.RegisterHotKey(ModifierKeysH.Alt, Keys.PrintScreen);
             kbHook.RegisterHotKey(ModifierKeysH.Control, Keys.PrintScreen);
 
-            dropForm = new frmDropArea(uploadOrganizer);
+            dropForm = new frmDropArea(Main.uploadOrganizer);
             dropForm.Show();
             dropForm.Hide();
 
-            try
-            {
-                string[] lines = File.ReadAllLines("config.cfg");
-                tbUser.Text = lines[0];
-                tbPword.Text = lines[1];
-            }
-            catch { }
-
-            uploadOrganizer.SetCredentials(tbUser.Text, tbPword.Text);
+            Main.LoadCredentials();
+            tbUser.Text = Main.username;
+            tbPword.Text = Main.password;
         }
 
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
@@ -53,15 +43,15 @@ namespace FoxScreen
             }
             else if (e.Modifier == ModifierKeysH.Alt)
             {
-                Rectangle completeRect = screenshotManager.GetCompleteScreen();
+                Rectangle completeRect = Main.screenshotManager.GetCompleteScreen();
                 Rectangle rect = ScreenshotManager.NativeMethods.GetActiveWindowAbsoluteClientRect();
                 rect.Offset(-completeRect.X, -completeRect.Y);
-                screenshotManager.AreaScreenShot(rect, ScreenshotManager.NativeMethods.GetActiveWindowTitle());
+                Main.screenshotManager.AreaScreenShot(rect, ScreenshotManager.NativeMethods.GetActiveWindowTitle());
             }
             else
             {
-                Rectangle rect = screenshotManager.GetCompleteScreen();
-                screenshotManager.AreaScreenShot(rect);
+                Rectangle rect = Main.screenshotManager.GetCompleteScreen();
+                Main.screenshotManager.AreaScreenShot(rect);
             }
         }
 
@@ -74,14 +64,13 @@ namespace FoxScreen
 
         private void btnFullshot_Click(object sender, EventArgs e)
         {
-            Rectangle rect = screenshotManager.GetCompleteScreen();
-            screenshotManager.AreaScreenShot(rect);
+            Rectangle rect = Main.screenshotManager.GetCompleteScreen();
+            Main.screenshotManager.AreaScreenShot(rect);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("config.cfg", tbUser.Text + Environment.NewLine + tbPword.Text);
-            uploadOrganizer.SetCredentials(tbUser.Text, tbPword.Text);
+            Main.SetCredentials(tbUser.Text, tbPword.Text);
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -101,8 +90,7 @@ namespace FoxScreen
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            uploadOrganizer.Dispose();
-            Application.Exit();
+            Main.Stop();
         }
 
         private void notifyIcon_Click(object sender, EventArgs e)

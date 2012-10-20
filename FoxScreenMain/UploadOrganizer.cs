@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using FoxCavesAPI;
+using System.IO.Pipes;
 
 namespace FoxScreen
 {
@@ -15,6 +16,10 @@ namespace FoxScreen
     {
         readonly Uploader uploader;
         readonly frmProgress uploadProgress;
+        readonly NamedPipeServerStream pipeServer = new NamedPipeServerStream("foxScreenUploadPipe");
+
+        bool isRunning;
+        Thread pipeReaderThread;
 
         public UploadOrganizer()
         {
@@ -27,16 +32,61 @@ namespace FoxScreen
             uploader.UploadStarted += uploader_UploadStarted;
             uploader.UploadFinished += uploader_UploadFinished;
             uploader.UploadProgress += uploader_UploadProgress;
+
+            isRunning = true;
+
+            pipeReaderThread = new Thread(new ThreadStart(PipeReaderThread));
+            pipeReaderThread.Start();
+        }
+
+        private void PipeReaderThread()
+        {
+            StreamReader reader = new StreamReader(pipeServer);
+
+            while (isRunning)
+            {
+                try
+                {
+                    pipeServer.WaitForConnection();
+                    string filename = reader.ReadLine();
+                    AddFileUpload(filename);
+                    pipeServer.Disconnect();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString(), "foxScreen: ERROR");
+                }
+            }
         }
 
         public void Dispose()
         {
             uploader.Dispose();
+            isRunning = false;
+            try
+            {
+                pipeReaderThread.Abort();
+            }
+            catch { }
         }
 
         public void SetCredentials(string username, string password)
         {
             uploader.SetCredentials(username, password);
+        }
+
+        public void AddFileUpload(string file)
+        {
+            if ((!File.Exists(file)) || Directory.Exists(file))
+                return;
+
+            int fPathPos = file.LastIndexOf('/');
+            int fPathPos2 = file.LastIndexOf('\\');
+            if (fPathPos2 > fPathPos) fPathPos = fPathPos2;
+            string filename = file.Substring(fPathPos + 1);
+
+            MemoryStream mstr = new MemoryStream(File.ReadAllBytes(file));
+            AddUpload(filename, mstr);
         }
 
         public void AddUpload(string filename, MemoryStream mstr)
