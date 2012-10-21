@@ -17,6 +17,8 @@ namespace FoxScreen
         bool isRunning;
         Thread pipeReaderThread;
 
+        bool credentialsSet = false;
+
         public UploadOrganizer()
         {
             uploadProgress = new frmProgress();
@@ -78,6 +80,7 @@ namespace FoxScreen
 
         public void SetCredentials(string username, string password)
         {
+            credentialsSet = true;
             uploader.SetCredentials(username, password);
         }
 
@@ -97,6 +100,12 @@ namespace FoxScreen
 
         public void AddUpload(string filename, MemoryStream mstr)
         {
+            if (!credentialsSet)
+            {
+                MessageBox.Show("Please set credentials first", "foxScreen");
+                return;
+            }
+
             Uploader.UploadInfo uploadInfo = uploader.QueueAsync(filename, mstr);
             uploadProgress.AddLabel(uploadInfo.filename);
         }

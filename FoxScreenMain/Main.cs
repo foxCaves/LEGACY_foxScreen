@@ -84,8 +84,10 @@ namespace FoxScreen
 
                 if (filename != null)
                 {
-                    LoadCredentials();
-                    uploadOrganizer.AddFileUpload(filename);
+                    if (LoadCredentials())
+                    {
+                        uploadOrganizer.AddFileUpload(filename);
+                    }
                 }
 
                 mainFrm = new frmMain();
@@ -123,7 +125,7 @@ namespace FoxScreen
             uploadOrganizer.SetCredentials(username, password);
         }
 
-        public static void LoadCredentials()
+        public static bool LoadCredentials()
         {
             try
             {
@@ -133,7 +135,12 @@ namespace FoxScreen
             }
             catch { }
 
+            if (username == null || password == null)
+                return false;
+
             uploadOrganizer.SetCredentials(username, password);
+
+            return true;
         }
 
         public static frmMain mainFrm;
